@@ -5,25 +5,32 @@ import { Box, Typography, Button, Grid, Card, CardContent, CardMedia, IconButton
 import { gsap } from 'gsap';
 import axios from 'axios';
 import Lottie from 'lottie-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, EffectCoverflow, Autoplay } from 'swiper/modules';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
+// Swiper CSS
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/pagination';
+
 // Cashier animation
 import cashierAnimation from '../../assets/animation.json';
 
-// Mock shop data
+// Shop data
 import { shopData } from '../../components/data/ShopData';
 
 const colors = {
   primaryGradient: 'linear-gradient(135deg, #00C4B4 0%, #7B61FF 100%)',
-  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)', // Vibrant purple
-  accent: '#FF6B6B', // Playful coral for CTAs
-  background: '#F8FAFC', // Clean, soft background
-  textPrimary: '#183a57', // Dark blue (used elsewhere)
-  textSecondary: '#D1D5DB', // Light gray
-  cardBg: '#FFFFFF', // Pure white cards
-  cardBorder: '#FFD700', // Golden doodle-like border
+  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)',
+  accent: '#FF6B6B',
+  background: '#F8FAFC',
+  textPrimary: '#183a57',
+  textSecondary: '#D1D5DB',
+  cardBg: '#FFFFFF',
+  cardBorder: '#FFD700',
   shadow: 'rgba(0, 0, 0, 0.06)',
 };
 
@@ -77,7 +84,7 @@ const Slogan = styled(Typography)({
   fontFamily: "'Bubblegum Sans', cursive",
   fontSize: '40px',
   fontWeight: 400,
-  color: '#FFFFFF', // White for contrast
+  color: '#FFFFFF',
   marginBottom: '66px',
   lineHeight: 1.2,
   textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
@@ -111,7 +118,7 @@ const SOLTicker = styled(Box)({
   display: 'inline-flex',
   alignItems: 'center',
   gap: 8,
-  background: '#FFFFFF', // White for clarity
+  background: '#FFFFFF',
   padding: '8px 16px',
   borderRadius: 12,
   boxShadow: `0 2px 8px ${colors.shadow}`,
@@ -122,10 +129,10 @@ const SOLTicker = styled(Box)({
 
 const ShopButton = styled(Button)({
   background: colors.accent,
-  color: '#FFFFFF', // White for contrast
+  color: '#FFFFFF',
   fontSize: '18px',
   padding: '6px 16px',
-  marginLeft:10,
+  marginLeft: 10,
   borderRadius: 16,
   textTransform: 'none',
   fontFamily: "'Poppins', sans-serif",
@@ -143,16 +150,19 @@ const ShopButton = styled(Button)({
   },
 });
 
-const CategoryItem = styled(Box)({
+const SwiperSlideItem = styled(Box)({
   textAlign: 'center',
-  transition: 'transform 0.2s ease',
-  '&:hover': {
-    transform: 'scale(1.05)',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '&:hover img': {
+    transform: 'scale(1.1)',
+    transition: 'transform 0.3s ease',
   },
 });
 
 const SectionTitle = styled(Typography)({
-  marginTop:"-50px",
   fontFamily: "'Bubblegum Sans', cursive",
   fontSize: '32px',
   fontWeight: 400,
@@ -228,12 +238,8 @@ const Home = () => {
   const heroRef = useRef(null);
   const productRefs = useRef([]);
 
-  // Featured products (limited to 4 for static display)
-  const featuredProducts = [
-    ...(shopData.find(category => category.category === 'Bakery')?.products || []).slice(0, 2),
-    ...(shopData.find(category => category.category === 'Dairy')?.products || []).slice(0, 1),
-    ...(shopData.find(category => category.category === 'Snacks')?.products || []).slice(0, 1),
-  ].slice(0, 4);
+  // All products from shopData
+  const allProducts = shopData.flatMap(category => category.products);
 
   const messages = [
     'SOL — это весело и вкусно!',
@@ -355,8 +361,8 @@ const Home = () => {
             sx={{
               fontFamily: "'Bubblegum Sans', cursive",
               fontSize: '20px',
-              color: '#000000', // Black text
-              background: '#FFFFFF', // White background
+              color: '#000000',
+              background: '#FFFFFF',
               borderRadius: '8px',
               padding: '8px 12px',
               maxWidth: 180,
@@ -370,10 +376,34 @@ const Home = () => {
 
       {/* Popular Categories */}
       <SectionTitle>Категории</SectionTitle>
-      <Grid container spacing={2} justifyContent="center">
-        {shopData.map((category, index) => (
-          <Grid item xs={6} sm={4} md={2} key={category.category}>
-            <CategoryItem component={Link} to={category.path}>
+      <Swiper
+        modules={[Pagination, EffectCoverflow, Autoplay]}
+        slidesPerView={3}
+        spaceBetween={2}
+        loop={true}
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: false,
+        }}
+        effect="coverflow"
+        coverflowEffect={{
+          rotate: 10,
+          stretch: 0,
+          depth: 150,
+          modifier: 1,
+          slideShadows: false,
+        }}
+        breakpoints={{
+          320: { slidesPerView: 1, spaceBetween: 2 },
+          640: { slidesPerView: 2, spaceBetween: 3 },
+          1024: { slidesPerView: 5, spaceBetween: 4 },
+        }}
+        className="mySwiper"
+        style={{ paddingBottom: '40px' }}
+      >
+        {shopData.map((category) => (
+          <SwiperSlide key={category.category}>
+            <SwiperSlideItem component={Link} to={category.path}>
               <CardMedia
                 component="img"
                 image={category.image}
@@ -384,15 +414,16 @@ const Home = () => {
               <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', color: colors.textPrimary }}>
                 {category.category}
               </Typography>
-            </CategoryItem>
-          </Grid>
+            </SwiperSlideItem>
+          </SwiperSlide>
         ))}
-      </Grid>
+      </Swiper>
+
 
       {/* Popular Products */}
       <SectionTitle>Хиты продаж</SectionTitle>
-      <Grid container spacing={3}>
-        {featuredProducts.map((product, index) => (
+      <Grid container spacing={4}>
+        {allProducts.map((product, index) => (
           <Grid item xs={12} sm={6} md={3} key={product.id}>
             <ProductCard
               ref={(el) => (productRefs.current[index] = el)}
