@@ -32,7 +32,6 @@ const HeroSection = styled(Box)({
   padding: '64px 32px',
   borderRadius: 24,
   textAlign: 'center',
-  margin: '0 auto 48px',
   maxWidth: '1280px',
   position: 'relative',
   overflow: 'hidden',
@@ -70,13 +69,11 @@ const HeroSection = styled(Box)({
   '@media (max-width: 768px)': {
     padding: '48px 16px',
     borderRadius: 16,
-    margin: '0 auto 32px',
     maxWidth: '100%',
   },
 });
 
 const Slogan = styled(Typography)({
-  
   fontFamily: "'Bubblegum Sans', cursive",
   fontSize: '40px',
   fontWeight: 400,
@@ -350,7 +347,7 @@ const Home = () => {
         <CashierBubble>
           <Lottie
             animationData={cashierAnimation}
-            style={{ width: 160, height: 160, margin: '-20px 0' }}
+            style={{ width: 300, height: 300, margin: '-100px 0' }}
             loop={true}
           />
           <Typography
