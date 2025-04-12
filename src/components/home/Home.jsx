@@ -16,7 +16,7 @@ import cashierAnimation from '../../assets/animation.json';
 import { shopData } from '../../components/data/ShopData';
 
 const colors = {
-  primaryGradient: 'linear-gradient(135deg, rgb(14, 49, 80) 0%, #1a3c59 100%)', // Deep, modern blue
+  primaryGradient: 'linear-gradient(135deg, #00C4B4 0%, #7B61FF 100%)',
   secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)', // Vibrant purple
   accent: '#FF6B6B', // Playful coral for CTAs
   background: '#F8FAFC', // Clean, soft background
