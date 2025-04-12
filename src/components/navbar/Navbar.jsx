@@ -11,6 +11,7 @@ import BakeryDiningIcon from '@mui/icons-material/BakeryDining';
 import LocalDrinkIcon from '@mui/icons-material/LocalDrink';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
 import LocalGroceryStoreIcon from '@mui/icons-material/LocalGroceryStore';
+import CoffeeIcon from '@mui/icons-material/Coffee';
 
 const colors = {
   primaryGradient: 'linear-gradient(135deg, #00C4B4 0%, #7B61FF 100%)',
@@ -55,8 +56,8 @@ const FooterContainer = styled(Box)(({ theme }) => ({
   boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
   zIndex: 1300,
   display: 'flex',
-  justifyContent: 'center',
-  height: '60px', // Fixed height for margin-bottom calculation
+  justifyContent: 'space-around', // Изменено для равномерного распределения
+  height: '60px',
 }));
 
 const LogoContainer = styled(Box)({
@@ -77,9 +78,9 @@ const LogoText = styled(Typography)({
 const NavItems = styled(Box)(({ isMobile }) => ({
   display: 'flex',
   flexDirection: isMobile ? 'row' : 'column',
-  gap: isMobile ? 20 : 12,
-  padding: isMobile ? '0 10px' : '20px 15px',
-  justifyContent: isMobile ? 'center' : 'flex-start',
+  gap: isMobile ? 0 : 12, // Уменьшен gap для мобильной версии
+  padding: isMobile ? '0 5px' : '20px 15px',
+  justifyContent: isMobile ? 'space-around' : 'flex-start', // Равномерное распределение
   alignItems: 'center',
   width: '100%',
 }));
@@ -87,18 +88,20 @@ const NavItems = styled(Box)(({ isMobile }) => ({
 const NavItem = styled(Link)(({ theme, active, isMobile }) => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: isMobile ? 'center' : 'flex-start',
-  gap: 12,
+  justifyContent: 'center',
+  gap: isMobile ? 0 : 12,
   textDecoration: 'none',
   color: active ? colors.textPrimary : colors.textSecondary,
-  padding: isMobile ? 10 : '14px 20px',
+  padding: isMobile ? '10px 5px' : '14px 20px',
   borderRadius: 12,
-  fontSize: isMobile ? 14 : 16,
+  fontSize: isMobile ? 12 : 16,
   fontWeight: active ? 600 : 500,
   background: active ? colors.activeBg : 'transparent',
   transition: theme.transitions.create(['background', 'color', 'transform', 'box-shadow'], {
     duration: theme.transitions.duration.short,
   }),
+  flex: isMobile ? 1 : 'none', // Равномерное распределение пространства
+  minWidth: isMobile ? '50px' : 'auto', // Минимальная ширина для мобильных
   '&:hover': {
     background: colors.hoverBg,
     color: colors.textPrimary,
@@ -122,23 +125,21 @@ const SOLPriceTicker = styled(Typography)({
 
 const Navbar = ({ isMobile }) => {
   const location = useLocation();
-
   const solPrice = 145.32; // Mock SOL price
 
   const links = [
     { to: '/', label: 'Home', icon: StoreIcon, active: location.pathname === '/' },
     { to: '/bakery', label: 'Bakery', icon: BakeryDiningIcon, active: location.pathname === '/bakery' },
     { to: '/dairy', label: 'Dairy', icon: LocalDrinkIcon, active: location.pathname === '/dairy' },
-    { to: '/vegetables', label: 'Vegetables', icon: LocalGroceryStoreIcon, active: location.pathname === '/vegetables' },
     { to: '/snacks', label: 'Snacks', icon: LocalPizzaIcon, active: location.pathname === '/snacks' },
-    { to: '/drinks', label: 'Drinks', icon: LocalDrinkIcon, active: location.pathname === '/drinks' },
+    { to: '/drinks', label: 'Drinks', icon: CoffeeIcon, active: location.pathname === '/drinks' },
     { to: '/cart', label: 'Cart', icon: ShoppingCartIcon, active: location.pathname === '/cart' },
-    { to: '/account', label: 'My Account', icon: AccountCircleIcon, active: location.pathname === '/account' },
+    { to: '/account', label: 'Account', icon: AccountCircleIcon, active: location.pathname === '/account' },
   ];
 
   const renderLink = ({ to, label, icon: Icon, active }) => (
     <NavItem to={to} active={active} isMobile={isMobile} key={to}>
-      <Icon sx={{ fontSize: isMobile ? 26 : 28, color: 'inherit' }} />
+      <Icon sx={{ fontSize: isMobile ? 24 : 28, color: 'inherit' }} />
       {!isMobile && (
         <Typography sx={{ fontSize: 16, fontWeight: active ? 600 : 500 }}>
           {label}
@@ -151,7 +152,7 @@ const Navbar = ({ isMobile }) => {
     return (
       <FooterContainer>
         <NavItems isMobile={true}>
-          {links.slice(0, 5).map(renderLink)}
+          {links.map(renderLink)}
         </NavItems>
       </FooterContainer>
     );

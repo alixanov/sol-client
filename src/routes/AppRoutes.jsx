@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import { Navbar, Home, CategoryPage, Account, Cart } from '../components/'; // Latest Navbar component
+import { Navbar, Home, Account, Cart ,InfoProduct, Barkery, Dairy, Snack, Drinks, CategoryProducts} from '../components/'; // Latest Navbar component
 
 
 const RoutesContainer = styled(Box)(({ isMobile }) => ({
@@ -36,13 +36,21 @@ const AppRoutes = () => {
       <RoutesContainer isMobile={isMobile}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/bakery" element={<CategoryPage category="Bakery" />} />
+          <Route path="/bakery" element={<Barkery category="Bakery" />} />
+          <Route path="/dairy" element={<Dairy category="Dairy" />} />
+          <Route path="/snacks" element={<Snack category="Snacks" />} />
+          <Route path="/drinks" element={<Drinks category="Drinks" />} />
+          <Route path="/product" element={<CategoryProducts category="product" />} />
+
+
+
           {/* <Route path="/dairy" element={<CategoryPage category="Dairy" />} />
           <Route path="/vegetables" element={<CategoryPage category="Vegetables" />} />
           <Route path="/snacks" element={<CategoryPage category="Snacks" />} />
           <Route path="/drinks" element={<CategoryPage category="Drinks" />} /> */}
           <Route path="/cart" element={<Cart />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/product/:id" element={<InfoProduct />} />
         </Routes>
       </RoutesContainer>
     </Box>
