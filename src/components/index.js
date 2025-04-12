@@ -1,0 +1,7 @@
+export {default as Navbar} from "../components/navbar/Navbar"
+export {default as Home} from "./home/Home"
+export {default as Cabinet} from "../components/cabinet/Cabinet"
+export {default as Register} from "../components/register/Register"
+export {default as CategoryPage} from "../components/category/CategoryPage"
+export {default as Cart} from "../components/cart/Cart"
+export {default as Account } from "../components/account/Account"
