@@ -26,8 +26,8 @@ import { shopData } from '../../components/data/ShopData';
 
 // Colors from Home component for consistency
 const colors = {
-  primaryGradient: 'linear-gradient(135deg, #00C4B4 0%, #7B61FF 100%)',
-  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)',
+  primaryGradient: 'linear-gradient(135deg,rgb(26, 110, 255) 0%, #7B61FF 100%)',
+  secondaryGradient: 'linear-gradient(135deg,rgb(122, 0, 236) 0%, #D8B4FE 100%)',
   accent: '#FF6B6B',
   background: '#F8FAFC',
   textPrimary: '#183a57',
@@ -339,7 +339,11 @@ const CategoryProducts = () => {
             component="img"
             image={category.image}
             alt={category.category}
-            sx={{ height: isMobile ? 60 : 80, width: 'auto', objectFit: 'contain' }}
+            sx={{
+              height: isMobile ? 60 : 80, width: 'auto', objectFit: 'contain', borderRadius: "100px"
+
+
+             }}
           />
         </Box>
         <CategoryTitle>{category.category}</CategoryTitle>

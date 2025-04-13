@@ -11,17 +11,17 @@ import BakeryDiningIcon from '@mui/icons-material/BakeryDining';
 import CoffeeIcon from '@mui/icons-material/Coffee';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
 import BatteryStdIcon from '@mui/icons-material/BatteryStd';
-
+import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 
 const colors = {
-  primaryGradient: 'linear-gradient(135deg, #00C4B4 0%, #7B61FF 100%)',
-  secondaryGradient: 'linear-gradient(135deg, #FF6B6B 0%, #FF9AA2 100%)',
+  primaryGradient: 'linear-gradient(135deg, #0053e3 0%, #7B61FF 100%)', // Updated to match banner
+  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)', // Kept for contrast
   textPrimary: '#FFFFFF',
-  textSecondary: '#E2D9FF',
-  activeBg: 'rgba(255, 255, 255, 0.2)',
+  textSecondary: '#D1D5DB',
+  activeBg: 'rgba(255, 255, 255, 0.25)',
   hoverBg: 'rgba(255, 255, 255, 0.15)',
-  accent: '#39FF14',
+  accent: '#FFD700', // Changed to gold to match banner's border
 };
 
 const NavbarContainer = styled(Drawer)(({ theme }) => ({
@@ -64,7 +64,7 @@ const FooterContainer = styled(Box)(({ theme }) => ({
 const LogoContainer = styled(Box)({
   padding: '20px',
   textAlign: 'center',
-  borderBottom: `2px solid ${colors.hoverBg}`,
+  borderBottom: `2px solid ${colors.accent}20`, // Updated to use accent color
 });
 
 const LogoText = styled(Typography)({
@@ -151,16 +151,17 @@ const Navbar = ({ isMobile }) => {
   const allLinks = [
     { to: '/', label: 'Home', icon: StoreIcon, active: location.pathname === '/' },
     { to: '/bakery', label: 'Bakery', icon: BakeryDiningIcon, active: location.pathname === '/bakery' },
-    { to: '/dairy', label: 'Dairy', icon: BatteryStdIcon, active: location.pathname === '/dairy' }, // Note: Reused Bakery icon for Dairy
+    { to: '/dairy', label: 'Dairy', icon: BatteryStdIcon, active: location.pathname === '/dairy' },
     { to: '/snacks', label: 'Snacks', icon: LocalPizzaIcon, active: location.pathname === '/snacks' },
     { to: '/drinks', label: 'Drinks', icon: CoffeeIcon, active: location.pathname === '/drinks' },
     { to: '/cart', label: 'Cart', icon: ShoppingCartIcon, active: location.pathname === '/cart' },
+    { to: '/target', label: 'Target', icon: CloseIcon, active: location.pathname === '/target' },
     { to: '/account', label: 'Account', icon: AccountCircleIcon, active: location.pathname === '/account' },
   ];
 
   // Filter links for mobile footer
   const mobileLinks = allLinks.filter(link =>
-    ['Home', 'Bakery', 'Drinks', 'Cart', 'Account'].includes(link.label)
+    ['Home', 'Bakery', 'Target', 'Cart', 'Account'].includes(link.label)
   );
 
   const renderLink = ({ to, label, icon: Icon, active }) => (
@@ -188,7 +189,7 @@ const Navbar = ({ isMobile }) => {
     <NavbarContainer variant="permanent" open={true}>
       <Box>
         <LogoContainer>
-          <LogoText>Cartoon Market</LogoText>
+          <LogoText>SOL Basket</LogoText>
           <Typography variant="caption" sx={{ color: colors.textSecondary, fontSize: 12 }}>
             Shop with Fun!
           </Typography>

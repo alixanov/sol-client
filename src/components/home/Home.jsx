@@ -18,26 +18,24 @@ import {
 } from '@mui/material';
 import { gsap } from 'gsap';
 import axios from 'axios';
-import Lottie from 'lottie-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, EffectCoverflow, Autoplay } from 'swiper/modules';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import PeopleIcon from '@mui/icons-material/People';
+import { CountUp } from 'countup.js';
 
 // Swiper CSS
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 
-// Cashier animation
-import cashierAnimation from '../../assets/animation.json';
-
 // Shop data
 import { shopData } from '../../components/data/ShopData';
 
 const colors = {
-  primaryGradient: 'linear-gradient(135deg, #00C4B4 0%, #7B61FF 100%)',
+  primaryGradient: 'linear-gradient(135deg, #0053e3 0%, #7B61FF 100%)',
   secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)',
   accent: '#FF6B6B',
   background: '#F8FAFC',
@@ -74,6 +72,7 @@ const HeroSection = styled(Box)(({ theme }) => ({
     borderRadius: '50%',
     opacity: 0.3,
     zIndex: 0,
+    animation: 'float 6s ease-in-out infinite',
   },
   '&:after': {
     content: '""',
@@ -86,6 +85,12 @@ const HeroSection = styled(Box)(({ theme }) => ({
     borderRadius: '50%',
     opacity: 0.2,
     zIndex: 0,
+    animation: 'float 8s ease-in-out infinite reverse',
+  },
+  '@keyframes float': {
+    '0%': { transform: 'translate(0, 0)' },
+    '50%': { transform: 'translate(20px, 20px)' },
+    '100%': { transform: 'translate(0, 0)' },
   },
   [theme.breakpoints.down('sm')]: {
     padding: '32px 16px',
@@ -117,6 +122,86 @@ const Slogan = styled(Typography)(({ theme }) => ({
   },
 }));
 
+const VisitorCounter = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  background: 'rgba(255, 255, 255, 0.9)',
+  padding: '8px 16px',
+  borderRadius: 12,
+  boxShadow: `0 2px 8px ${colors.shadow}`,
+  margin: '16px auto',
+  zIndex: 1,
+  width: 'fit-content',
+  [theme.breakpoints.down('sm')]: {
+    padding: '6px 12px',
+    borderRadius: 10,
+  },
+}));
+
+const SOLTicker = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  background: 'rgba(255, 255, 255, 0.95)',
+  padding: '12px 20px',
+  borderRadius: 16,
+  boxShadow: `0 4px 12px ${colors.shadow}`,
+  margin: '16px auto',
+  border: `2px solid ${colors.cardBorder}`,
+  zIndex: 1,
+  position: 'relative',
+  overflow: 'hidden',
+  '&:before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+    animation: 'shine 3s infinite',
+  },
+  '@keyframes shine': {
+    '0%': { left: '-100%' },
+    '50%': { left: '100%' },
+    '100%': { left: '100%' },
+  },
+  [theme.breakpoints.down('sm')]: {
+    padding: '8px 16px',
+    borderRadius: 12,
+  },
+}));
+
+const ShopButton = styled(Button)(({ theme }) => ({
+  background: colors.accent,
+  color: '#FFFFFF',
+  fontSize: '18px',
+  padding: '12px 32px',
+  marginLeft: 10,
+  borderRadius: 16,
+  textTransform: 'none',
+  fontFamily: "'Poppins', sans-serif",
+  fontWeight: 600,
+  boxShadow: `0 4px 12px ${colors.shadow}`,
+  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  '&:hover': {
+    background: colors.accent,
+    transform: 'scale(1.05)',
+    boxShadow: `0 6px 16px rgba(255, 107, 107, 0.4)`,
+  },
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '16px',
+    padding: '10px 24px',
+    marginLeft: 0,
+    marginTop: 10,
+  },
+  [theme.breakpoints.between('sm', 'md')]: {
+    fontSize: '17px',
+    padding: '10px 28px',
+  },
+}));
+
 const CashierBubble = styled(Box)(({ theme }) => ({
   position: 'absolute',
   bottom: '48px',
@@ -141,53 +226,8 @@ const CashierBubble = styled(Box)(({ theme }) => ({
   },
 }));
 
-const SOLTicker = styled(Box)(({ theme }) => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 8,
-  background: '#FFFFFF',
-  padding: '8px 16px',
-  borderRadius: 12,
-  boxShadow: `0 2px 8px ${colors.shadow}`,
-  margin: '16px auto',
-  border: `1px solid ${colors.cardBorder}`,
-  zIndex: 1,
-  [theme.breakpoints.down('sm')]: {
-    padding: '6px 12px',
-    borderRadius: 10,
-  },
-}));
-
-const ShopButton = styled(Button)(({ theme }) => ({
-  background: colors.accent,
-  color: '#FFFFFF',
-  fontSize: '18px',
-  padding: '6px 16px',
-  marginLeft: 10,
-  borderRadius: 16,
-  textTransform: 'none',
-  fontFamily: "'Poppins', sans-serif",
-  fontWeight: 500,
-  boxShadow: `0 4px 12px ${colors.shadow}`,
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  '&:hover': {
-    background: colors.accent,
-    transform: 'scale(1.05)',
-    boxShadow: `0 6px 16px rgba(255, 107, 107, 0.4)`,
-  },
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '16px',
-    padding: '8px 20px',
-    marginLeft: 0,
-    marginTop: 10,
-  },
-  [theme.breakpoints.between('sm', 'md')]: {
-    fontSize: '17px',
-    padding: '8px 22px',
-  },
-}));
-
 const SwiperSlideItem = styled(Box)(({ theme }) => ({
+
   textAlign: 'center',
   display: 'flex',
   flexDirection: 'column',
@@ -248,6 +288,7 @@ const ProductCard = styled(Card)(({ theme }) => ({
 
 const ProductImage = styled(CardMedia)(({ theme }) => ({
   height: 120,
+
   objectFit: 'contain',
   margin: '16px auto',
   transition: 'transform 0.4s ease',
@@ -342,9 +383,11 @@ const Home = () => {
   const [cashierMessage, setCashierMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [visitorCount, setVisitorCount] = useState(0);
   const heroRef = useRef(null);
   const productRefs = useRef([]);
   const snackbarRef = useRef(null);
+  const visitorCountRef = useRef(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -354,10 +397,10 @@ const Home = () => {
   const allProducts = shopData.flatMap(category => category.products);
 
   const messages = [
-    'SOL — это весело и вкусно!',
-    'Хватай мультяшные вкусняшки!',
-    'Цены такие же яркие, как SOL!',
-    'Давай за покупками!',
+    'SOL is fun and tasty!',
+    'Grab some cartoon treats!',
+    'Prices as bright as SOL!',
+    'Let’s go shopping!',
   ];
 
   // Fetch SOL price
@@ -378,6 +421,19 @@ const Home = () => {
     fetchSolPrice();
     const interval = setInterval(fetchSolPrice, 60000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Simulate visitor count
+  useEffect(() => {
+    const randomVisitors = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000;
+    setVisitorCount(randomVisitors);
+    if (visitorCountRef.current && randomVisitors) {
+      const countUp = new CountUp(visitorCountRef.current, randomVisitors, {
+        duration: 2,
+        separator: ',',
+      });
+      countUp.start();
+    }
   }, []);
 
   // Rotate cashier messages
@@ -409,6 +465,16 @@ const Home = () => {
         heroRef.current.querySelector('.shop-button'),
         { y: 20, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.8, delay: 0.3, ease: 'power2.out' }
+      );
+      gsap.fromTo(
+        heroRef.current.querySelector('.visitor-counter'),
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, delay: 0.5, ease: 'power2.out' }
+      );
+      gsap.fromTo(
+        heroRef.current.querySelector('.sol-ticker'),
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 0.8, delay: 0.7, ease: 'back.out(1.7)' }
       );
     }
     productRefs.current.forEach((ref, index) => {
@@ -443,17 +509,17 @@ const Home = () => {
   const handleAddToCart = (product, index, e) => {
     e.stopPropagation();
 
-    // Получаем текущую корзину из localStorage или создаём пустую
+    // Get current cart from localStorage or create empty
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    // Проверяем, есть ли продукт уже в корзине
+    // Check if product exists in cart
     const existingItem = cart.find(item => item.id === product.id);
 
     if (existingItem) {
-      // Если продукт уже есть, увеличиваем количество
+      // If product exists, increase quantity
       existingItem.quantity += 1;
     } else {
-      // Если продукта нет, добавляем новый с количеством 1
+      // If product doesn't exist, add new with quantity 1
       cart.push({
         id: product.id,
         name: product.name,
@@ -463,14 +529,14 @@ const Home = () => {
       });
     }
 
-    // Сохраняем обновлённую корзину в localStorage
+    // Save updated cart to localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
 
-    // Показываем уведомление
-    setSnackbarMessage(`${product.name} добавлен в корзину!`);
+    // Show notification
+    setSnackbarMessage(`${product.name} added to cart!`);
     setOpenSnackbar(true);
 
-    // Анимация карточки
+    // Animate card
     const ref = productRefs.current[index];
     if (ref) {
       gsap.to(ref, {
@@ -518,7 +584,21 @@ const Home = () => {
     }}>
       {/* Hero Section */}
       <HeroSection ref={heroRef}>
-        <Slogan className="slogan">CartoonCart — твой SOL-вкусный мир!</Slogan>
+        <Slogan className="slogan">SOL Basket — Your Tasty World!</Slogan>
+
+        <VisitorCounter className="visitor-counter">
+          <PeopleIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
+          <Typography
+            ref={visitorCountRef}
+            sx={{
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: { xs: '14px', sm: '16px' },
+              color: '#000000',
+            }}
+          >
+            Visitors today
+          </Typography>
+        </VisitorCounter>
 
         <Box sx={{
           display: 'flex',
@@ -527,34 +607,35 @@ const Home = () => {
           alignItems: 'center',
           gap: { xs: 1, sm: 2 }
         }}>
-          <SOLTicker>
+          <SOLTicker className="sol-ticker">
             <Typography sx={{
               fontFamily: "'Poppins', sans-serif",
-              fontSize: { xs: '14px', sm: '16px' },
+              fontSize: { xs: '16px', sm: '18px' },
               color: '#000000',
               display: 'flex',
-              alignItems: 'center'
+              alignItems: 'center',
+              fontWeight: 500,
             }}>
               1 SOL = ${solPrice ? solPrice.toFixed(2) : '...'}
               {priceTrend === 'up' ? (
-                <TrendingUpIcon sx={{ color: colors.accent, fontSize: { xs: '16px', sm: '18px' }, ml: 1 }} />
+                <TrendingUpIcon sx={{ color: colors.accent, fontSize: { xs: '18px', sm: '20px' }, ml: 1 }} />
               ) : (
-                <TrendingDownIcon sx={{ color: '#FF5252', fontSize: { xs: '16px', sm: '18px' }, ml: 1 }} />
+                <TrendingDownIcon sx={{ color: '#FF5252', fontSize: { xs: '18px', sm: '20px' }, ml: 1 }} />
               )}
             </Typography>
           </SOLTicker>
 
           <ShopButton component={Link} to="/account" className="shop-button">
-            В магазин!
+            Shop Now!
           </ShopButton>
         </Box>
 
         <CashierBubble>
-          <Lottie
+          {/* <Lottie
             animationData={cashierAnimation}
             style={getCashierAnimationSize()}
             loop={true}
-          />
+          /> */}
           <CashierMessage className="cashier-message">
             {cashierMessage}
           </CashierMessage>
@@ -562,7 +643,7 @@ const Home = () => {
       </HeroSection>
 
       {/* Popular Categories */}
-      <SectionTitle>Категории</SectionTitle>
+      <SectionTitle>Categories</SectionTitle>
       <Swiper
         modules={[Pagination, EffectCoverflow, Autoplay]}
         slidesPerView={3}
@@ -581,25 +662,33 @@ const Home = () => {
           slideShadows: false,
         }}
         breakpoints={{
-          320: { slidesPerView: 3, spaceBetween: 2 },
-          640: { slidesPerView: 3, spaceBetween: 3 },
-          1024: { slidesPerView: 5, spaceBetween: 4 },
+          320: { slidesPerView: 2, spaceBetween: 1 }, // Меньше элементов, меньше расстояние
+          640: { slidesPerView: 3, spaceBetween: 2 },
+          1024: { slidesPerView: 5, spaceBetween: 2 }, // Уменьшение gap на ПК
         }}
         className="mySwiper"
         style={{ paddingBottom: '40px' }}
       >
         {shopData.map((category) => (
           <SwiperSlide key={category.category}>
-            {/* Modified to navigate to the CategoryProducts component */}
             <Link to={`/category/${category.category.toLowerCase()}`} style={{ textDecoration: 'none' }}>
               <SwiperSlideItem>
                 <CardMedia
                   component="img"
                   image={category.image}
                   alt={category.category}
-                  sx={{ height: 80, objectFit: 'contain', mb: 1 }}
+                  sx={{
+                    marginTop:1,
+                    width: { xs: 80, sm: 90, md: 100 }, // Размер изменяется в зависимости от экрана
+                    height: { xs: 80, sm: 90, md: 100 },
+                    objectFit: 'cover',
+                    mb: 1,
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                  }}
                   loading="lazy"
                 />
+
                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', color: colors.textPrimary }}>
                   {category.category}
                 </Typography>
@@ -611,8 +700,9 @@ const Home = () => {
 
 
       {/* Popular Products */}
-      <SectionTitle>Хиты продаж</SectionTitle>
-      <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent="center">
+      <SectionTitle>Top Sellers</SectionTitle>
+      <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent={{ xs: 'center', sm: 'start' }}>
+
         {allProducts.map((product, index) => (
           <Grid item xs={12} sm={6} md={3} key={product.id}>
             <ProductCard
