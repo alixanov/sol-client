@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -8,10 +8,11 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import StoreIcon from '@mui/icons-material/Store';
 import BakeryDiningIcon from '@mui/icons-material/BakeryDining';
-import LocalDrinkIcon from '@mui/icons-material/LocalDrink';
-import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
-import LocalGroceryStoreIcon from '@mui/icons-material/LocalGroceryStore';
 import CoffeeIcon from '@mui/icons-material/Coffee';
+import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
+import BatteryStdIcon from '@mui/icons-material/BatteryStd';
+
+import axios from 'axios';
 
 const colors = {
   primaryGradient: 'linear-gradient(135deg, #00C4B4 0%, #7B61FF 100%)',
@@ -56,7 +57,7 @@ const FooterContainer = styled(Box)(({ theme }) => ({
   boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
   zIndex: 1300,
   display: 'flex',
-  justifyContent: 'space-around', // Изменено для равномерного распределения
+  justifyContent: 'space-around',
   height: '60px',
 }));
 
@@ -78,9 +79,9 @@ const LogoText = styled(Typography)({
 const NavItems = styled(Box)(({ isMobile }) => ({
   display: 'flex',
   flexDirection: isMobile ? 'row' : 'column',
-  gap: isMobile ? 0 : 12, // Уменьшен gap для мобильной версии
+  gap: isMobile ? 0 : 12,
   padding: isMobile ? '0 5px' : '20px 15px',
-  justifyContent: isMobile ? 'space-around' : 'flex-start', // Равномерное распределение
+  justifyContent: isMobile ? 'space-around' : 'flex-start',
   alignItems: 'center',
   width: '100%',
 }));
@@ -100,12 +101,13 @@ const NavItem = styled(Link)(({ theme, active, isMobile }) => ({
   transition: theme.transitions.create(['background', 'color', 'transform', 'box-shadow'], {
     duration: theme.transitions.duration.short,
   }),
-  flex: isMobile ? 1 : 'none', // Равномерное распределение пространства
-  minWidth: isMobile ? '50px' : 'auto', // Минимальная ширина для мобильных
+  flex: isMobile ? 1 : 'none',
+  minWidth: isMobile ? '50px' : 'auto',
+  transform: isMobile && active ? 'scale(0.95)' : 'none',
   '&:hover': {
     background: colors.hoverBg,
     color: colors.textPrimary,
-    transform: 'scale(1.05)',
+    transform: isMobile ? 'scale(0.95)' : 'scale(1.05)',
     boxShadow: `0 0 10px ${colors.accent}40`,
   },
 }));
@@ -125,17 +127,41 @@ const SOLPriceTicker = styled(Typography)({
 
 const Navbar = ({ isMobile }) => {
   const location = useLocation();
-  const solPrice = 145.32; // Mock SOL price
+  const [solPrice, setSolPrice] = useState(null);
 
-  const links = [
+  // Fetch SOL price
+  useEffect(() => {
+    const fetchSolPrice = async () => {
+      try {
+        const response = await axios.get(
+          'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd'
+        );
+        const currentPrice = response.data.solana.usd;
+        setSolPrice(currentPrice);
+      } catch (error) {
+        console.error('Failed to fetch SOL price:', error);
+        setSolPrice(145.32);
+      }
+    };
+    fetchSolPrice();
+    const interval = setInterval(fetchSolPrice, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const allLinks = [
     { to: '/', label: 'Home', icon: StoreIcon, active: location.pathname === '/' },
     { to: '/bakery', label: 'Bakery', icon: BakeryDiningIcon, active: location.pathname === '/bakery' },
-    { to: '/dairy', label: 'Dairy', icon: LocalDrinkIcon, active: location.pathname === '/dairy' },
+    { to: '/dairy', label: 'Dairy', icon: BatteryStdIcon, active: location.pathname === '/dairy' }, // Note: Reused Bakery icon for Dairy
     { to: '/snacks', label: 'Snacks', icon: LocalPizzaIcon, active: location.pathname === '/snacks' },
     { to: '/drinks', label: 'Drinks', icon: CoffeeIcon, active: location.pathname === '/drinks' },
     { to: '/cart', label: 'Cart', icon: ShoppingCartIcon, active: location.pathname === '/cart' },
     { to: '/account', label: 'Account', icon: AccountCircleIcon, active: location.pathname === '/account' },
   ];
+
+  // Filter links for mobile footer
+  const mobileLinks = allLinks.filter(link =>
+    ['Home', 'Bakery', 'Drinks', 'Cart', 'Account'].includes(link.label)
+  );
 
   const renderLink = ({ to, label, icon: Icon, active }) => (
     <NavItem to={to} active={active} isMobile={isMobile} key={to}>
@@ -152,7 +178,7 @@ const Navbar = ({ isMobile }) => {
     return (
       <FooterContainer>
         <NavItems isMobile={true}>
-          {links.map(renderLink)}
+          {mobileLinks.map(renderLink)}
         </NavItems>
       </FooterContainer>
     );
@@ -168,10 +194,10 @@ const Navbar = ({ isMobile }) => {
           </Typography>
         </LogoContainer>
         <SOLPriceTicker>
-          1 SOL = ${solPrice.toFixed(2)} USD
+          1 SOL = ${solPrice ? solPrice.toFixed(2) : '...'} USD
         </SOLPriceTicker>
         <NavItems>
-          {links.map(renderLink)}
+          {allLinks.map(renderLink)}
         </NavItems>
       </Box>
       <Box sx={{ padding: '20px' }} />

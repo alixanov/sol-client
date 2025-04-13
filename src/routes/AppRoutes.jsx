@@ -40,7 +40,7 @@ const AppRoutes = () => {
           <Route path="/dairy" element={<Dairy category="Dairy" />} />
           <Route path="/snacks" element={<Snack category="Snacks" />} />
           <Route path="/drinks" element={<Drinks category="Drinks" />} />
-          <Route path="/product" element={<CategoryProducts category="product" />} />
+          <Route path="/category/:categoryId" element={<CategoryProducts />} /> {/* Add the new route */}
 
 
 

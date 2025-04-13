@@ -544,7 +544,7 @@ const Home = () => {
             </Typography>
           </SOLTicker>
 
-          <ShopButton component={Link} to="/shop" className="shop-button">
+          <ShopButton component={Link} to="/account" className="shop-button">
             В магазин!
           </ShopButton>
         </Box>
@@ -581,8 +581,8 @@ const Home = () => {
           slideShadows: false,
         }}
         breakpoints={{
-          320: { slidesPerView: 1, spaceBetween: 2 },
-          640: { slidesPerView: 2, spaceBetween: 3 },
+          320: { slidesPerView: 3, spaceBetween: 2 },
+          640: { slidesPerView: 3, spaceBetween: 3 },
           1024: { slidesPerView: 5, spaceBetween: 4 },
         }}
         className="mySwiper"
@@ -590,18 +590,21 @@ const Home = () => {
       >
         {shopData.map((category) => (
           <SwiperSlide key={category.category}>
-            <SwiperSlideItem component={Link} to={category.path}>
-              <CardMedia
-                component="img"
-                image={category.image}
-                alt={category.category}
-                sx={{ height: 80, objectFit: 'contain', mb: 1 }}
-                loading="lazy"
-              />
-              <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', color: colors.textPrimary }}>
-                {category.category}
-              </Typography>
-            </SwiperSlideItem>
+            {/* Modified to navigate to the CategoryProducts component */}
+            <Link to={`/category/${category.category.toLowerCase()}`} style={{ textDecoration: 'none' }}>
+              <SwiperSlideItem>
+                <CardMedia
+                  component="img"
+                  image={category.image}
+                  alt={category.category}
+                  sx={{ height: 80, objectFit: 'contain', mb: 1 }}
+                  loading="lazy"
+                />
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', color: colors.textPrimary }}>
+                  {category.category}
+                </Typography>
+              </SwiperSlideItem>
+            </Link>
           </SwiperSlide>
         ))}
       </Swiper>
