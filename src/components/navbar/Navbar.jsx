@@ -148,6 +148,8 @@ const Navbar = ({ isMobile }) => {
     return () => clearInterval(interval);
   }, []);
 
+
+  
   const allLinks = [
     { to: '/', label: 'Home', icon: StoreIcon, active: location.pathname === '/' },
     { to: '/bakery', label: 'Bakery', icon: BakeryDiningIcon, active: location.pathname === '/bakery' },
