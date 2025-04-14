@@ -132,7 +132,7 @@ const ClearCartButton = styled(Button)({
 const SellerBubble = styled(Box)({
   position: 'fixed',
   bottom: '32px',
-  right: '32px',
+  left: '290px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -148,7 +148,7 @@ const SellerBubble = styled(Box)({
   },
   '@media (max-width: 480px)': {
     bottom: '16px',
-    left: '-180px',
+    left: '-160px',
     transform: 'scale(0.6)',
   },
 });
