@@ -127,6 +127,9 @@ const SOLPriceTicker = styled(Typography)({
 
 
 
+
+
+
 const Navbar = ({ isMobile }) => {
   const location = useLocation();
   const [solPrice, setSolPrice] = useState(null);
