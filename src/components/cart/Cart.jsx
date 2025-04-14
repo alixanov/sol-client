@@ -148,7 +148,7 @@ const SellerBubble = styled(Box)({
   },
   '@media (max-width: 480px)': {
     bottom: '16px',
-    right: '16px',
+    left: '-180px',
     transform: 'scale(0.6)',
   },
 });
