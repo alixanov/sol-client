@@ -184,7 +184,7 @@ const FeaturedText = styled(Typography)({
 const SellerBubble = styled(Box)({
   position: 'fixed',
   bottom: '32px',
-  right: '32px',
+  left: '290px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
