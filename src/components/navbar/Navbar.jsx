@@ -11,17 +11,17 @@ import BakeryDiningIcon from '@mui/icons-material/BakeryDining';
 import CoffeeIcon from '@mui/icons-material/Coffee';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
 import BatteryStdIcon from '@mui/icons-material/BatteryStd';
-import CloseIcon from '@mui/icons-material/Close';
+import XIcon from '@mui/icons-material/X';
 import axios from 'axios';
 
 const colors = {
-  primaryGradient: 'linear-gradient(135deg, #0053e3 0%, #7B61FF 100%)', // Updated to match banner
-  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)', // Kept for contrast
+  primaryGradient: 'linear-gradient(135deg, #0053e3 0%, #7B61FF 100%)',
+  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)',
   textPrimary: '#FFFFFF',
   textSecondary: '#D1D5DB',
   activeBg: 'rgba(255, 255, 255, 0.25)',
   hoverBg: 'rgba(255, 255, 255, 0.15)',
-  accent: '#FFD700', // Changed to gold to match banner's border
+  accent: '#FFD700',
 };
 
 const NavbarContainer = styled(Drawer)(({ theme }) => ({
@@ -64,7 +64,7 @@ const FooterContainer = styled(Box)(({ theme }) => ({
 const LogoContainer = styled(Box)({
   padding: '20px',
   textAlign: 'center',
-  borderBottom: `2px solid ${colors.accent}20`, // Updated to use accent color
+  borderBottom: `2px solid ${colors.accent}20`,
 });
 
 const LogoText = styled(Typography)({
@@ -86,7 +86,7 @@ const NavItems = styled(Box)(({ isMobile }) => ({
   width: '100%',
 }));
 
-const NavItem = styled(Link)(({ theme, active, isMobile }) => ({
+const NavItem = styled(Link)(({ theme, active, isMobile, isExternal }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -108,7 +108,7 @@ const NavItem = styled(Link)(({ theme, active, isMobile }) => ({
     background: colors.hoverBg,
     color: colors.textPrimary,
     transform: isMobile ? 'scale(0.95)' : 'scale(1.05)',
-    boxShadow: `0 0 10px ${colors.accent}40`,
+    boxShadow: isExternal ? `0 0 10px ${colors.accent}80` : `0 0 10px ${colors.accent}40`,
   },
 }));
 
@@ -148,26 +148,37 @@ const Navbar = ({ isMobile }) => {
     return () => clearInterval(interval);
   }, []);
 
-
-  
   const allLinks = [
     { to: '/', label: 'Home', icon: StoreIcon, active: location.pathname === '/' },
     { to: '/bakery', label: 'Bakery', icon: BakeryDiningIcon, active: location.pathname === '/bakery' },
-    { to: '/dairy', label: 'Dairy', icon: BatteryStdIcon, active: location.pathname === '/dairy' },
+    // { to: '/dairy', label: 'Dairy', icon: BatteryStdIcon, active: location.pathname === '/dairy' },
     { to: '/snacks', label: 'Snacks', icon: LocalPizzaIcon, active: location.pathname === '/snacks' },
     { to: '/drinks', label: 'Drinks', icon: CoffeeIcon, active: location.pathname === '/drinks' },
     { to: '/cart', label: 'Cart', icon: ShoppingCartIcon, active: location.pathname === '/cart' },
-    { to: '/target', label: 'Target', icon: CloseIcon, active: location.pathname === '/target' },
     { to: '/account', label: 'Account', icon: AccountCircleIcon, active: location.pathname === '/account' },
+    {
+      to: 'https://x.com/',
+      label: 'FOLLOW US',
+      icon: XIcon,
+      active: false,
+      isExternal: true,
+    },
   ];
 
   // Filter links for mobile footer
-  const mobileLinks = allLinks.filter(link =>
-    ['Home', 'Bakery', 'Target', 'Cart', 'Account'].includes(link.label)
+  const mobileLinks = allLinks.filter((link) =>
+    ['Home', 'Bakery', 'FOLLOW US', 'Cart', 'Account'].includes(link.label)
   );
 
-  const renderLink = ({ to, label, icon: Icon, active }) => (
-    <NavItem to={to} active={active} isMobile={isMobile} key={to}>
+  const renderLink = ({ to, label, icon: Icon, active, isExternal }) => (
+    <NavItem
+      to={to}
+      active={active}
+      isMobile={isMobile}
+      isExternal={isExternal}
+      key={to}
+      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+    >
       <Icon sx={{ fontSize: isMobile ? 24 : 28, color: 'inherit' }} />
       {!isMobile && (
         <Typography sx={{ fontSize: 16, fontWeight: active ? 600 : 500 }}>
@@ -208,4 +219,4 @@ const Navbar = ({ isMobile }) => {
   );
 };
 
-export default Navbar;  
+export default Navbar;
