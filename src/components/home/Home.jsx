@@ -51,7 +51,7 @@ const HeroSection = styled(Box)(({ theme }) => ({
   padding: '64px 32px',
   borderRadius: 24,
   textAlign: 'center',
-  maxWidth: '1280px',
+  maxWidth: '100%',
   position: 'relative',
   overflow: 'hidden',
   boxShadow: `0 6px 20px ${colors.shadow}`,
@@ -662,7 +662,7 @@ const Home = () => {
           slideShadows: false,
         }}
         breakpoints={{
-          320: { slidesPerView: 2, spaceBetween: 1 }, // Меньше элементов, меньше расстояние
+          320: { slidesPerView: 3, spaceBetween: 1 }, // Меньше элементов, меньше расстояние
           640: { slidesPerView: 3, spaceBetween: 2 },
           1024: { slidesPerView: 5, spaceBetween: 2 }, // Уменьшение gap на ПК
         }}
