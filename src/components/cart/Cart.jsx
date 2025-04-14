@@ -1,41 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Typography, Button, IconButton, Card, CardMedia, CardContent } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import cashierAnimation from '../../assets/deleviry.json';
+import { lightBlue } from '@mui/material/colors';
 
-// Определяем цвета, чтобы они совпадали с InfoProduct
+// Colors matching InfoProduct
 const colors = {
-  primaryGradient: 'linear-gradient(135deg, #FF3D00 0%, #FF8A65 100%)',
-  secondaryGradient: 'linear-gradient(135deg, #00B7D4 0%, #3F51B5 100%)',
-  accent: '#FFD700',
-  background: 'linear-gradient(180deg, #FFE082 0%, #F06292 100%)',
-  textPrimary: '#183a57',
-  textSecondary: '#FFFFFF',
-  cloudBg1: 'linear-gradient(135deg, #F50057 0%, #FF4081 100%)',
-  cloudBg2: 'linear-gradient(135deg, #00E676 0%, #69F0AE 100%)',
-  shadow: 'rgba(0, 0, 0, 0.2)',
+  primaryGradient: 'linear-gradient(135deg, #0053e3 0%, #7B61FF 100%)', // Blue to purple
+  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)', // Purple to light purple
+  lightBlue: 'linear-gradient(135deg, #7B61FF 0%,rgb(176, 205, 255)   100%)', // Blue to purple
+  lightPurple: '#F3E8FF', // Subtle purple (unused here)
+  background: '#F5F7FA', // Neutral gray-white
+  textPrimary: '#183a57', // Dark blue-gray
+  textSecondary: '#FFFFFF', // White for gradients
+  shadow: 'rgba(0, 0, 0, 0.1)', // Softer shadow
 };
 
-// Стилизованные компоненты
+// Styled components
 const CartContainer = styled(Box)({
-  maxWidth: '1000px',
+  maxWidth: '100%',
   margin: '40px auto',
-  padding: '32px',
-  borderRadius: 24,
-  position: 'relative',
-  overflow: 'hidden',
+  padding: '24px',
+  borderRadius: 16,
   minHeight: '100vh',
   '@media (max-width: 960px)': {
     maxWidth: '90%',
     margin: '32px auto',
-    padding: '24px',
+    padding: '20px',
   },
   '@media (max-width: 768px)': {
     margin: '24px auto',
     padding: '16px',
-    borderRadius: 16,
+    borderRadius: 12,
   },
   '@media (max-width: 480px)': {
     padding: '12px',
@@ -44,48 +43,53 @@ const CartContainer = styled(Box)({
 });
 
 const CartCard = styled(Card)({
-  background: colors.cloudBg1,
-  borderRadius: '16px',
-  boxShadow: `0 4px 12px ${colors.shadow}`,
-  border: `2px solid ${colors.accent}`,
+  background: colors.lightBlue,
+  borderRadius: '12px',
+  boxShadow: `0 4px 8px ${colors.shadow}`,
+  border: `1px solid ${colors.textPrimary}20`,
   display: 'flex',
   alignItems: 'center',
-  marginBottom: '16px',
-  padding: '16px',
+  marginBottom: '12px',
+  padding: '12px',
   '@media (max-width: 768px)': {
     flexDirection: 'column',
-    padding: '12px',
+    padding: '10px',
   },
 });
 
 const CartImage = styled(CardMedia)({
-  width: '100px',
-  height: '100px',
+  width: '80px',
+  height: '80px',
   objectFit: 'contain',
-  borderRadius: '12px',
-  marginRight: '16px',
+  borderRadius: '10px',
+  marginRight: '12px',
   '@media (max-width: 768px)': {
     marginRight: 0,
-    marginBottom: '12px',
+    marginBottom: '10px',
   },
 });
 
 const CartTitle = styled(Typography)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '24px',
-  color: colors.textSecondary,
+  fontSize: '22px',
+  color: colors.textPrimary,
+  textDecoration: 'none',
+  transition: 'color 0.3s ease',
+  '&:hover': {
+    color: colors.primaryGradient.split(' ')[1], // First color of gradient
+  },
   '@media (max-width: 768px)': {
-    fontSize: '20px',
+    fontSize: '18px',
     textAlign: 'center',
   },
 });
 
 const CartText = styled(Typography)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '18px',
-  color: colors.textSecondary,
+  fontSize: '16px',
+  color: colors.textPrimary,
   '@media (max-width: 768px)': {
-    fontSize: '16px',
+    fontSize: '14px',
     textAlign: 'center',
   },
 });
@@ -94,9 +98,10 @@ const DeleteButton = styled(IconButton)({
   background: colors.primaryGradient,
   color: colors.textSecondary,
   marginLeft: 'auto',
+  transition: 'background 0.3s ease, transform 0.3s ease',
   '&:hover': {
-    background: colors.primaryGradient,
-    transform: 'scale(1.1)',
+    background: colors.secondaryGradient,
+    transform: 'scale(1.05)',
   },
   '@media (max-width: 768px)': {
     marginLeft: 0,
@@ -106,71 +111,71 @@ const DeleteButton = styled(IconButton)({
 
 const ClearCartButton = styled(Button)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '18px',
+  fontSize: '16px',
   background: colors.secondaryGradient,
   color: colors.textSecondary,
-  padding: '10px 20px',
-  borderRadius: '12px',
+  padding: '8px 16px',
+  borderRadius: '10px',
   textTransform: 'none',
-  boxShadow: `0 4px 10px ${colors.shadow}`,
+  boxShadow: `0 4px 8px ${colors.shadow}`,
+  transition: 'background 0.3s ease, transform 0.3s ease',
   '&:hover': {
-    background: colors.secondaryGradient,
+    background: colors.primaryGradient,
     transform: 'scale(1.05)',
-    boxShadow: `0 6px 14px ${colors.shadow}`,
   },
   '@media (max-width: 768px)': {
-    fontSize: '16px',
-    padding: '8px 16px',
+    fontSize: '14px',
+    padding: '6px 12px',
   },
 });
 
 const SellerBubble = styled(Box)({
   position: 'fixed',
-  bottom: '40px',
-  right: '40px',
+  bottom: '32px',
+  right: '32px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 3,
   '@media (max-width: 960px)': {
-    bottom: '32px',
-    right: '32px',
-  },
-  '@media (max-width: 768px)': {
     bottom: '24px',
     right: '24px',
-    transform: 'scale(0.9)',
+  },
+  '@media (max-width: 768px)': {
+    bottom: '20px',
+    right: '20px',
+    transform: 'scale(0.8)',
   },
   '@media (max-width: 480px)': {
     bottom: '16px',
     right: '16px',
-    transform: 'scale(0.7)',
+    transform: 'scale(0.6)',
   },
 });
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
 
-  // Загружаем корзину из localStorage при монтировании
+  // Load cart from localStorage on mount
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     setCartItems(cart);
   }, []);
 
-  // Удаление одного товара
+  // Remove one item
   const handleRemoveItem = (id) => {
     const updatedCart = cartItems.filter(item => item.id !== id);
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
-  // Очистка всей корзины
+  // Clear entire cart
   const handleClearCart = () => {
     setCartItems([]);
     localStorage.setItem('cart', JSON.stringify([]));
   };
 
-  // Подсчёт общей стоимости
+  // Calculate total price
   const totalPrice = cartItems.reduce((total, item) => total + item.usdPrice * item.quantity, 0);
 
   if (cartItems.length === 0) {
@@ -179,18 +184,20 @@ const Cart = () => {
         <Typography
           sx={{
             fontFamily: "'Bubblegum Sans', cursive",
-            fontSize: '32px',
+            fontSize: '28px',
             color: colors.textPrimary,
             textAlign: 'center',
             mt: 10,
+            '@media (max-width: 768px)': { fontSize: '24px' },
+            '@media (max-width: 480px)': { fontSize: '20px' },
           }}
         >
-          Корзина пуста
+          Cart is empty
         </Typography>
         <SellerBubble>
           <Lottie
             animationData={cashierAnimation}
-            style={{ width: 320, height: 320 }}
+            style={{ width: 240, height: 240 }}
             loop={true}
           />
         </SellerBubble>
@@ -203,54 +210,59 @@ const Cart = () => {
       <Typography
         sx={{
           fontFamily: "'Bubblegum Sans', cursive",
-          fontSize: '40px',
+          fontSize: '36px',
           color: colors.textPrimary,
-          mb: 4,
+          mb: 3,
           textAlign: 'center',
+          '@media (max-width: 768px)': { fontSize: '28px' },
+          '@media (max-width: 480px)': { fontSize: '24px' },
         }}
       >
-        Ваша корзина
+        Your Cart
       </Typography>
 
       {cartItems.map((item) => (
-        <CartCard key={item.id} className="cart-card">
-          <CartImage
-            component="img"
-            image={item.image}
-            alt={item.name}
-          />
-          <CardContent sx={{ flex: 1, p: 0 }}>
-            <CartTitle>{item.name}</CartTitle>
-            <CartText>
-              Цена: ${item.usdPrice.toFixed(2)} × {item.quantity} = ${(item.usdPrice * item.quantity).toFixed(2)}
-            </CartText>
-          </CardContent>
+        <CartCard key={item.id}>
+          <Link to={`/product/${item.id}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <CartImage
+              component="img"
+              image={item.image}
+              alt={item.name}
+            />
+            <CardContent sx={{ flex: 1, p: 0 }}>
+              <CartTitle component="span">{item.name}</CartTitle>
+              <CartText>
+                Price: ${item.usdPrice.toFixed(2)} × {item.quantity} = ${(item.usdPrice * item.quantity).toFixed(2)}
+              </CartText>
+            </CardContent>
+          </Link>
           <DeleteButton onClick={() => handleRemoveItem(item.id)}>
             <DeleteIcon />
           </DeleteButton>
         </CartCard>
       ))}
 
-      <Box sx={{ textAlign: 'center', mt: 4 }}>
+      <Box sx={{ textAlign: 'center', mt: 3 }}>
         <Typography
           sx={{
             fontFamily: "'Bubblegum Sans', cursive",
-            fontSize: '24px',
+            fontSize: '22px',
             color: colors.textPrimary,
             mb: 2,
+            '@media (max-width: 768px)': { fontSize: '18px' },
           }}
         >
-          Итого: ${totalPrice.toFixed(2)}
+          Total: ${totalPrice.toFixed(2)}
         </Typography>
         <ClearCartButton onClick={handleClearCart}>
-          Очистить корзину
+          Clear Cart
         </ClearCartButton>
       </Box>
 
       <SellerBubble>
         <Lottie
           animationData={cashierAnimation}
-          style={{ width: 320, height: 320 }}
+          style={{ width: 240, height: 240 }}
           loop={true}
         />
       </SellerBubble>

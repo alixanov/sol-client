@@ -279,7 +279,7 @@ const CategoryProducts = () => {
     localStorage.setItem('cart', JSON.stringify(cart));
 
     // Show notification
-    setSnackbarMessage(`${product.name} добавлен в корзину!`);
+    setSnackbarMessage(`${product.name} added to cart!`);
     setOpenSnackbar(true);
 
     // Animate product card
@@ -309,10 +309,10 @@ const CategoryProducts = () => {
     return (
       <Container maxWidth="lg" sx={{ textAlign: 'center', py: 8 }}>
         <Typography variant="h4" sx={{ fontFamily: "'Bubblegum Sans', cursive" }}>
-          Категория не найдена
+          Category not found
         </Typography>
         <Typography variant="body1" sx={{ mt: 2 }}>
-          Вернитесь на <Link to="/">главную страницу</Link>
+          Return to the <Link to="/">homepage</Link>
         </Typography>
       </Container>
     );
@@ -321,16 +321,6 @@ const CategoryProducts = () => {
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
       {/* Breadcrumbs navigation */}
-      <CustomBreadcrumbs
-        separator={<NavigateNextIcon fontSize="small" />}
-        aria-label="breadcrumb"
-      >
-        <Link to="/">Главная</Link>
-        <Link to="/shop">Магазин</Link>
-        <Typography color="text.primary" sx={{ fontFamily: "'Poppins', sans-serif", fontSize: isMobile ? '12px' : '14px' }}>
-          {category.category}
-        </Typography>
-      </CustomBreadcrumbs>
 
       {/* Category header */}
       <CategoryHeader className="category-header">
@@ -341,14 +331,12 @@ const CategoryProducts = () => {
             alt={category.category}
             sx={{
               height: isMobile ? 60 : 80, width: 'auto', objectFit: 'contain', borderRadius: "100px"
-
-
-             }}
+            }}
           />
         </Box>
         <CategoryTitle>{category.category}</CategoryTitle>
         <CategoryDescription>
-          {category.description || `Лучшие товары в категории ${category.category}. Выбирай из нашей эксклюзивной коллекции!`}
+          {category.description || `The best products in the ${category.category} category. Choose from our exclusive collection!`}
         </CategoryDescription>
       </CategoryHeader>
 
@@ -399,7 +387,7 @@ const CategoryProducts = () => {
         ) : (
           <Grid item xs={12}>
             <Typography variant="h5" sx={{ textAlign: 'center', py: 4, fontFamily: "'Bubblegum Sans', cursive" }}>
-              В этой категории пока нет товаров
+              There are no products in this category yet
             </Typography>
           </Grid>
         )}

@@ -10,155 +10,119 @@ import cashierAnimation from '../../assets/animation.json';
 import { shopData } from '../../components/data/ShopData';
 
 const colors = {
-  primaryGradient: 'linear-gradient(135deg, #FF3D00 0%, #FF8A65 100%)',
-  secondaryGradient: 'linear-gradient(135deg, #00B7D4 0%, #3F51B5 100%)',
-  accent: '#FFD700',
-  background: 'linear-gradient(180deg, #FFE082 0%, #F06292 100%)',
-  textPrimary: '#183a57',
-  textSecondary: '#FFFFFF',
-  cloudBg1: 'linear-gradient(135deg, #F50057 0%, #FF4081 100%)',
-  cloudBg2: 'linear-gradient(135deg, #00E676 0%, #69F0AE 100%)',
-  cloudBg3: 'linear-gradient(135deg, #FFAB00 0%, #FFD740 100%)',
-  shadow: 'rgba(0, 0, 0, 0.2)',
+  primaryGradient: 'linear-gradient(135deg, #0053e3 0%, #7B61FF 100%)', // Blue to purple
+  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)', // Purple to light purple
+  lightBlue: '#E0F7FA', // Subtle blue for price, buttons
+  lightPurple: '#F3E8FF', // Subtle purple for featured
+  background: '#F5F7FA', // Neutral gray-white background
+  textPrimary: '#183a57', // Dark blue-gray for contrast
+  textSecondary: '#FFFFFF', // White for text on gradients
+  shadow: 'rgba(0, 0, 0, 0.1)', // Softer shadow
 };
 
 const ProductContainer = styled(Box)({
-  maxWidth: '1000px',
+  maxWidth: '100%',
   margin: '40px auto',
-  padding: '32px',
-  borderRadius: 24,
+  padding: '24px',
+  borderRadius: 16,
   position: 'relative',
-  overflow: 'hidden',
   minHeight: '100vh',
+  // boxShadow: `0 4px 8px ${colors.shadow}`,
   '@media (max-width: 960px)': {
     maxWidth: '90%',
     margin: '32px auto',
-    padding: '24px',
+    padding: '20px',
   },
   '@media (max-width: 768px)': {
     margin: '24px auto',
     padding: '16px',
-    borderRadius: 16,
+    borderRadius: 12,
   },
   '@media (max-width: 480px)': {
     padding: '12px',
     margin: '16px auto',
   },
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: '-60px',
-    left: '-60px',
-    width: '220px',
-    height: '220px',
-    background: 'radial-gradient(circle, rgba(255,255,255,0.6), transparent)',
-    borderRadius: '50%',
-    opacity: 0.5,
-    zIndex: 0,
-  },
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    bottom: '-70px',
-    right: '-70px',
-    width: '280px',
-    height: '280px',
-    background: 'radial-gradient(circle, rgba(255,215,0,0.4), transparent)',
-    borderRadius: '50%',
-    opacity: 0.4,
-    zIndex: 0,
-  },
 });
 
 const CloudCard = styled(Box)(({ type }) => ({
-  background: type === 'primary' ? colors.cloudBg1 : type === 'secondary' ? colors.cloudBg2 : colors.cloudBg3,
-  borderRadius: '24px',
-  padding: '20px 28px',
-  boxShadow: `0 6px 16px ${colors.shadow}`,
+  background:
+    type === 'primary' ? colors.primaryGradient :
+      type === 'secondary' ? colors.secondaryGradient :
+        type === 'tertiary' ? colors.lightBlue :
+          colors.lightPurple,
+  borderRadius: '16px',
+  padding: '16px 24px',
+  boxShadow: `0 4px 8px ${colors.shadow}`,
   position: 'relative',
   zIndex: 2,
-  margin: '20px 0',
-  border: `3px solid ${colors.accent}`,
+  margin: '16px 0',
+  border: `1px solid ${colors.textPrimary}20`,
   maxWidth: '550px',
   width: '100%',
   opacity: 0,
-  transform: 'translateY(50px)',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    bottom: '-18px',
-    left: '40px',
-    width: '35px',
-    height: '35px',
-    background: 'inherit',
-    borderRadius: '50%',
-    border: `2px solid ${colors.accent}`,
-    transform: 'rotate(45deg)',
-    zIndex: -1,
-  },
+  transform: 'translateY(20px)',
   '@media (max-width: 768px)': {
-    padding: '16px 20px',
-    borderRadius: '20px',
+    padding: '12px 20px',
+    borderRadius: '12px',
     maxWidth: '90%',
-    margin: '16px auto',
+    margin: '12px auto',
   },
   '@media (max-width: 480px)': {
-    padding: '12px 16px',
-    borderRadius: '16px',
+    padding: '10px 16px',
+    borderRadius: '10px',
     maxWidth: '100%',
   },
 }));
 
 const ProductImage = styled(CardMedia)({
-  height: 280,
+  height: 260,
   objectFit: 'contain',
-  borderRadius: 20,
-  margin: '32px auto',
-  border: `4px solid ${colors.accent}`,
-  boxShadow: `0 6px 16px ${colors.shadow}`,
-  maxWidth: '320px',
+  borderRadius: 12,
+  margin: '24px auto',
+  border: `1px solid ${colors.textPrimary}20`,
+  boxShadow: `0 4px 8px ${colors.shadow}`,
+  maxWidth: '300px',
   '@media (max-width: 960px)': {
-    height: 240,
-    maxWidth: '280px',
+    height: 220,
+    maxWidth: '260px',
   },
   '@media (max-width: 768px)': {
-    height: 200,
-    maxWidth: '240px',
+    height: 180,
+    maxWidth: '220px',
   },
   '@media (max-width: 480px)': {
-    height: 160,
-    maxWidth: '180px',
-    margin: '24px auto',
+    height: 140,
+    maxWidth: '160px',
+    margin: '16px auto',
   },
 });
 
 const ProductTitle = styled(Typography)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '40px',
+  fontSize: '36px',
   fontWeight: 400,
   color: colors.textSecondary,
   textAlign: 'center',
-  textShadow: '2px 2px 6px rgba(0,0,0,0.3)',
-  marginBottom: '20px',
+  marginBottom: '16px',
   '@media (max-width: 768px)': {
-    fontSize: '32px',
+    fontSize: '28px',
   },
   '@media (max-width: 480px)': {
-    fontSize: '24px',
-    marginBottom: '16px',
+    fontSize: '22px',
+    marginBottom: '12px',
   },
 });
 
 const ProductText = styled(Typography)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '20px',
+  fontSize: '18px',
   color: colors.textSecondary,
   textAlign: 'center',
   '@media (max-width: 768px)': {
-    fontSize: '18px',
+    fontSize: '16px',
   },
   '@media (max-width: 480px)': {
-    fontSize: '16px',
+    fontSize: '14px',
   },
 });
 
@@ -166,109 +130,109 @@ const NutritionInfo = styled(Box)({
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
-  gap: '10px',
+  gap: '8px',
   '@media (max-width: 480px)': {
-    gap: '8px',
+    gap: '6px',
   },
 });
 
 const NutritionChip = styled(Chip)({
-  background: colors.primaryGradient,
-  color: colors.textSecondary,
+  background: colors.lightBlue,
+  color: colors.textPrimary,
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '14px',
-  borderRadius: '12px',
-  padding: '6px 10px',
+  fontSize: '13px',
+  borderRadius: '10px',
+  padding: '4px 8px',
   '@media (max-width: 768px)': {
-    fontSize: '13px',
+    fontSize: '12px',
   },
   '@media (max-width: 480px)': {
-    fontSize: '12px',
-    padding: '4px 8px',
+    fontSize: '11px',
+    padding: '3px 6px',
   },
 });
 
 const AvailabilityChip = styled(Chip)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '16px',
-  borderRadius: '12px',
-  padding: '6px 10px',
+  fontSize: '15px',
+  borderRadius: '10px',
+  padding: '4px 8px',
+  background: colors.lightBlue,
+  color: colors.textPrimary,
   '@media (max-width: 768px)': {
     fontSize: '14px',
   },
   '@media (max-width: 480px)': {
-    fontSize: '13px',
-    padding: '4px 8px',
+    fontSize: '12px',
+    padding: '3px 6px',
   },
 });
 
 const FeaturedText = styled(Typography)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '22px',
-  color: colors.textSecondary,
+  fontSize: '20px',
+  color: colors.textPrimary,
   textAlign: 'center',
-  fontStyle: 'italic',
-  textShadow: '1px 1px 3px rgba(0,0,0,0.3)',
   '@media (max-width: 768px)': {
-    fontSize: '20px',
+    fontSize: '18px',
   },
   '@media (max-width: 480px)': {
-    fontSize: '18px',
+    fontSize: '16px',
   },
 });
 
 const SellerBubble = styled(Box)({
   position: 'fixed',
-  bottom: '40px',
-  right: '40px',
+  bottom: '32px',
+  right: '32px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 3,
   '@media (max-width: 960px)': {
-    bottom: '32px',
-    right: '32px',
-  },
-  '@media (max-width: 768px)': {
     bottom: '24px',
     right: '24px',
-    transform: 'scale(0.9)',
+  },
+  '@media (max-width: 768px)': {
+    bottom: '20px',
+    right: '20px',
+    transform: 'scale(0.8)',
   },
   '@media (max-width: 480px)': {
     bottom: '16px',
     right: '16px',
-    transform: 'scale(0.7)',
+    transform: 'scale(0.6)',
   },
 });
 
 const BackButton = styled(Button)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '20px',
-  color: colors.textSecondary,
-  background: colors.cloudBg1,
-  borderRadius: '14px',
-  padding: '10px 20px',
+  fontSize: '18px',
+  color: colors.textPrimary,
+  background: colors.lightBlue,
+  borderRadius: '12px',
+  padding: '8px 16px',
   textTransform: 'none',
-  boxShadow: `0 4px 10px ${colors.shadow}`,
+  boxShadow: `0 4px 8px ${colors.shadow}`,
   position: 'absolute',
-  top: '32px',
-  left: '32px',
+  top: '24px',
+  left: '24px',
   zIndex: 3,
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  transition: 'background 0.3s ease, transform 0.3s ease',
   '&:hover': {
-    background: colors.cloudBg1,
-    transform: 'scale(1.15)',
-    boxShadow: `0 6px 14px ${colors.shadow}`,
+    background: colors.secondaryGradient,
+    color: colors.textSecondary,
+    transform: 'scale(1.05)',
   },
   '@media (max-width: 768px)': {
-    fontSize: '18px',
-    padding: '8px 16px',
-    top: '24px',
-    left: '24px',
-  },
-  '@media (max-width: 480px)': {
     fontSize: '16px',
     padding: '6px 12px',
+    top: '20px',
+    left: '20px',
+  },
+  '@media (max-width: 480px)': {
+    fontSize: '14px',
+    padding: '5px 10px',
     top: '16px',
     left: '16px',
   },
@@ -276,42 +240,19 @@ const BackButton = styled(Button)({
 
 const AddToCartButton = styled(Button)({
   fontFamily: "'Bubblegum Sans', cursive",
-  fontSize: '20px',
-  background: colors.cloudBg2,
-  color: colors.textSecondary,
-  padding: '14px 28px',
-  borderRadius: '16px',
-  textTransform: 'none',
-  boxShadow: `0 4px 12px ${colors.shadow}`,
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  '&:hover': {
-    background: colors.cloudBg2,
-    transform: 'scale(1.15)',
-    boxShadow: `0 6px 16px rgba(0, 230, 118, 0.4)`,
-  },
-  '@media (max-width: 768px)': {
-    fontSize: '18px',
-    padding: '12px 24px',
-  },
-  '@media (max-width: 480px)': {
-    fontSize: '16px',
-    padding: '10px 20px',
-  },
-});
-
-const CustomSnackbar = styled(SnackbarContent)({
-  background: colors.cloudBg3,
-  border: `3px solid ${colors.accent}`,
-  borderRadius: '16px',
-  padding: '12px 24px',
-  boxShadow: `0 6px 16px ${colors.shadow}`,
-  fontFamily: "'Bubblegum Sans', cursive",
   fontSize: '18px',
-  color: colors.textSecondary,
-  textAlign: 'center',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  background: colors.lightBlue,
+  color: colors.textPrimary,
+  padding: '12px 24px',
+  borderRadius: '12px',
+  textTransform: 'none',
+  boxShadow: `0 4px 8px ${colors.shadow}`,
+  transition: 'background 0.3s ease, transform 0.3s ease',
+  '&:hover': {
+    background: colors.secondaryGradient,
+    color: colors.textSecondary,
+    transform: 'scale(1.05)',
+  },
   '@media (max-width: 768px)': {
     fontSize: '16px',
     padding: '10px 20px',
@@ -319,6 +260,29 @@ const CustomSnackbar = styled(SnackbarContent)({
   '@media (max-width: 480px)': {
     fontSize: '14px',
     padding: '8px 16px',
+  },
+});
+
+const CustomSnackbar = styled(SnackbarContent)({
+  background: colors.lightPurple,
+  border: `1px solid ${colors.textPrimary}20`,
+  borderRadius: '12px',
+  padding: '10px 20px',
+  boxShadow: `0 4px 8px ${colors.shadow}`,
+  fontFamily: "'Bubblegum Sans', cursive",
+  fontSize: '16px',
+  color: colors.textPrimary,
+  textAlign: 'center',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '@media (max-width: 768px)': {
+    fontSize: '14px',
+    padding: '8px 16px',
+  },
+  '@media (max-width: 480px)': {
+    fontSize: '12px',
+    padding: '6px 12px',
   },
 });
 
@@ -329,52 +293,42 @@ const InfoProduct = () => {
   const snackbarRef = useRef(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  // Находим продукт
+  // Find product
   const product = shopData
     .flatMap(category => category.products)
     .find(product => product.id === productId);
 
-  // Анимация облаков
+  // Cloud animation
   useEffect(() => {
     cloudRefs.current.forEach((ref, index) => {
       if (ref) {
         gsap.fromTo(
           ref,
-          { opacity: 0, y: 50, scale: 0.8 },
+          { opacity: 0, y: 20 },
           {
             opacity: 1,
             y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: 'back.out(1.7)',
-            delay: index * 0.5,
-            onComplete: () => {
-              gsap.to(ref, {
-                rotation: 2,
-                duration: 2,
-                yoyo: true,
-                repeat: -1,
-                ease: 'sine.inOut',
-              });
-            },
+            duration: 0.6,
+            ease: 'power2.out',
+            delay: index * 0.3,
           }
         );
       }
     });
   }, [product]);
 
-  // Анимация Snackbar
+  // Snackbar animation
   useEffect(() => {
     if (openSnackbar && snackbarRef.current) {
       gsap.fromTo(
         snackbarRef.current,
-        { opacity: 0, y: -50 },
-        { opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
       );
     }
   }, [openSnackbar]);
 
-  // Обработчик добавления в корзину
+  // Add to cart handler
   const handleAddToCart = () => {
     if (!product) return;
 
@@ -398,11 +352,11 @@ const InfoProduct = () => {
     setOpenSnackbar(true);
 
     gsap.to(cloudRefs.current[7], {
-      scale: 1.2,
+      scale: 1.1,
       duration: 0.2,
       yoyo: true,
       repeat: 1,
-      ease: 'power2.inOut',
+      ease: 'power2.out',
     });
 
     console.log(`Added ${product.name} to cart`, cart);
@@ -416,21 +370,20 @@ const InfoProduct = () => {
     return (
       <ProductContainer>
         <BackButton component={Link} to="/" startIcon={<ArrowBackIcon />}>
-          Назад
+          Back
         </BackButton>
         <Typography
           sx={{
             fontFamily: "'Bubblegum Sans', cursive",
-            fontSize: '32px',
-            color: colors.textSecondary,
+            fontSize: '28px',
+            color: colors.textPrimary,
             textAlign: 'center',
             mt: 10,
-            textShadow: '2px 2px 6px rgba(0,0,0,0.3)',
-            '@media (max-width: 768px)': { fontSize: '28px' },
-            '@media (max-width: 480px)': { fontSize: '24px' },
+            '@media (max-width: 768px)': { fontSize: '24px' },
+            '@media (max-width: 480px)': { fontSize: '20px' },
           }}
         >
-          Ой! Продукт не найден!
+          Oops! Product not found!
         </Typography>
       </ProductContainer>
     );
@@ -439,7 +392,7 @@ const InfoProduct = () => {
   return (
     <ProductContainer>
       <BackButton component={Link} to="/" startIcon={<ArrowBackIcon />}>
-        Назад
+        Back
       </BackButton>
 
       <ProductImage
@@ -449,7 +402,7 @@ const InfoProduct = () => {
         ref={(el) => (cloudRefs.current[0] = el)}
       />
 
-      <Box sx={{ maxWidth: '650px', mx: 'auto', mt: 5 }}>
+      <Box sx={{ maxWidth: '650px', mx: 'auto', mt: 4 }}>
         <CloudCard type="primary" ref={(el) => (cloudRefs.current[1] = el)}>
           <ProductTitle>{product.name}</ProductTitle>
         </CloudCard>
@@ -459,46 +412,46 @@ const InfoProduct = () => {
         </CloudCard>
 
         <CloudCard type="tertiary" ref={(el) => (cloudRefs.current[3] = el)}>
-          <ProductText>Цена: ${product.usdPrice.toFixed(2)}</ProductText>
+          <ProductText>Price: ${product.usdPrice.toFixed(2)}</ProductText>
         </CloudCard>
 
         <CloudCard type="primary" ref={(el) => (cloudRefs.current[4] = el)}>
           <NutritionInfo>
-            <NutritionChip label={`Калории: ${product.nutrition.calories}`} />
-            <NutritionChip label={`Белки: ${product.nutrition.protein}`} />
-            <NutritionChip label={`Углеводы: ${product.nutrition.carbs}`} />
-            <NutritionChip label={`Жиры: ${product.nutrition.fat}`} />
+            <NutritionChip label={`Calories: ${product.nutrition.calories}`} />
+            <NutritionChip label={`Protein: ${product.nutrition.protein}`} />
+            <NutritionChip label={`Carbs: ${product.nutrition.carbs}`} />
+            <NutritionChip label={`Fat: ${product.nutrition.fat}`} />
           </NutritionInfo>
         </CloudCard>
 
         <CloudCard type="secondary" ref={(el) => (cloudRefs.current[5] = el)}>
           <AvailabilityChip
-            label={product.availability === 'available' ? 'В наличии' : 'Нет в наличии'}
+            label={product.availability === 'available' ? 'In Stock' : 'Out of Stock'}
             color={product.availability === 'available' ? 'success' : 'error'}
           />
         </CloudCard>
 
         {product.featured && (
-          <CloudCard type="tertiary" ref={(el) => (cloudRefs.current[6] = el)}>
+          <CloudCard type="featured" ref={(el) => (cloudRefs.current[6] = el)}>
             <FeaturedText>{product.featured}</FeaturedText>
           </CloudCard>
         )}
       </Box>
 
-      <Box sx={{ textAlign: 'center', mt: 5, mb: 8 }}>
+      <Box sx={{ textAlign: 'center', mt: 4, mb: 6 }}>
         <AddToCartButton
           startIcon={<AddShoppingCartIcon />}
           onClick={handleAddToCart}
           ref={(el) => (cloudRefs.current[7] = el)}
         >
-          Добавить в корзину
+          Add to Cart
         </AddToCartButton>
       </Box>
 
       <SellerBubble>
         <Lottie
           animationData={cashierAnimation}
-          style={{ width: 320, height: 320 }}
+          style={{ width: 240, height: 240 }}
           loop={true}
         />
       </SellerBubble>
@@ -513,7 +466,7 @@ const InfoProduct = () => {
       >
         <CustomSnackbar
           ref={snackbarRef}
-          message={`${product.name} добавлен в корзину!`}
+          message={`${product.name} added to cart!`}
         />
       </Snackbar>
     </ProductContainer>
