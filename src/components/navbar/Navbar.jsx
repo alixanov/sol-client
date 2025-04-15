@@ -198,7 +198,7 @@ const Navbar = ({ isMobile }) => {
 
   // Filter links for mobile footer
   const mobileLinks = allLinks.filter((link) =>
-    ['Home', 'Bakery', 'FOLLOW US', 'Cart', 'Account'].includes(link.label)
+    ['Home', 'Bakery', 'FOLLOW US', 'Cart', 'Account',"Register"].includes(link.label)
   );
 
   const renderLink = ({ to, label, icon: Icon, active, isExternal, onClick }) => {
