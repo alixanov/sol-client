@@ -26,6 +26,8 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import PeopleIcon from '@mui/icons-material/People';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CountUp } from 'countup.js';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+
 
 // Swiper CSS
 import 'swiper/css';
@@ -394,6 +396,8 @@ const Home = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const [realtimeVisitors, setRealtimeVisitors] = useState(0);
+
 
   const allProducts = shopData.flatMap(category => category.products);
 
@@ -425,7 +429,7 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Track visitor on page load
+  // Обновите эффект trackVisitor
   useEffect(() => {
     const trackVisitor = async () => {
       try {
@@ -434,10 +438,12 @@ const Home = () => {
         });
         setUserCount(response.data.users);
         setVisitorCount(response.data.visitors);
+        setRealtimeVisitors(response.data.realtimeVisitors || 0); // Добавлено
       } catch (error) {
         console.error('Failed to track visitor:', error);
         setUserCount(1000);
         setVisitorCount(5000);
+        setRealtimeVisitors(200); // Fallback значение
       }
     };
     trackVisitor();
@@ -605,6 +611,7 @@ const Home = () => {
       <HeroSection ref={heroRef}>
         <Slogan className="slogan">SOL Basket — Your Tasty World!</Slogan>
 
+
         <UserCounter className="user-counter">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <PeopleIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
@@ -639,7 +646,7 @@ const Home = () => {
                 mr: 1,
               }}
             >
-              Unique Visitors:
+              Total Visitors:
             </Typography>
             <Typography
               ref={visitorCountRef}
@@ -652,8 +659,30 @@ const Home = () => {
               {visitorCount}
             </Typography>
           </Box>
+          {/* Добавленный блок для отображения текущих посетителей */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AccessTimeIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
+            <Typography
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: { xs: '14px', sm: '16px' },
+                color: '#000000',
+                mr: 1,
+              }}
+            >
+              Online Now:
+            </Typography>
+            <Typography
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: { xs: '14px', sm: '16px' },
+                color: '#000000',
+              }}
+            >
+              {realtimeVisitors}
+            </Typography>
+          </Box>
         </UserCounter>
-
         <Box sx={{
           display: 'flex',
           flexDirection: { xs: 'column', sm: 'row' },
