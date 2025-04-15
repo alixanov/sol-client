@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -125,14 +125,22 @@ const SOLPriceTicker = styled(Typography)({
   border: `1px solid ${colors.accent}30`,
 });
 
-
-
-
-
-
 const Navbar = ({ isMobile }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [solPrice, setSolPrice] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check authentication status when component mounts or location changes
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('userData');
+      setIsLoggedIn(!!(token && userData));
+    };
+
+    checkAuthStatus();
+  }, [location.pathname]);
 
   // Fetch SOL price
   useEffect(() => {
@@ -153,6 +161,16 @@ const Navbar = ({ isMobile }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Handle account navigation based on login status
+  const handleAccountNavigation = (e) => {
+    e.preventDefault();
+    if (isLoggedIn) {
+      navigate('/account');
+    } else {
+      navigate('/register');
+    }
+  };
+
   const allLinks = [
     { to: '/', label: 'Home', icon: StoreIcon, active: location.pathname === '/' },
     { to: '/bakery', label: 'Bakery', icon: BakeryDiningIcon, active: location.pathname === '/bakery' },
@@ -160,7 +178,15 @@ const Navbar = ({ isMobile }) => {
     { to: '/snacks', label: 'Snacks', icon: LocalPizzaIcon, active: location.pathname === '/snacks' },
     { to: '/drinks', label: 'Drinks', icon: CoffeeIcon, active: location.pathname === '/drinks' },
     { to: '/cart', label: 'Cart', icon: ShoppingCartIcon, active: location.pathname === '/cart' },
-    { to: '/account', label: 'Account', icon: AccountCircleIcon, active: location.pathname === '/account' },
+    {
+      to: isLoggedIn ? '/account' : '/register',
+      label: isLoggedIn ? 'Account' : 'Register', // Исправлено
+      icon: AccountCircleIcon,
+      active: ['/account', '/register'].includes(location.pathname),
+      onClick: handleAccountNavigation
+    }
+
+,
     {
       to: 'https://x.com/',
       label: 'FOLLOW US',
@@ -175,23 +201,49 @@ const Navbar = ({ isMobile }) => {
     ['Home', 'Bakery', 'FOLLOW US', 'Cart', 'Account'].includes(link.label)
   );
 
-  const renderLink = ({ to, label, icon: Icon, active, isExternal }) => (
-    <NavItem
-      to={to}
-      active={active}
-      isMobile={isMobile}
-      isExternal={isExternal}
-      key={to}
-      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-    >
-      <Icon sx={{ fontSize: isMobile ? 24 : 28, color: 'inherit' }} />
-      {!isMobile && (
-        <Typography sx={{ fontSize: 16, fontWeight: active ? 600 : 500 }}>
-          {label}
-        </Typography>
-      )}
-    </NavItem>
-  );
+  const renderLink = ({ to, label, icon: Icon, active, isExternal, onClick }) => {
+    // Special handling for links with custom onClick behavior
+    if (onClick) {
+      return (
+        <NavItem
+          as="div" // Using div instead of Link to avoid navigation conflicts
+          to={to}
+          active={active}
+          isMobile={isMobile}
+          isExternal={isExternal}
+          key={to}
+          onClick={onClick}
+          style={{ cursor: 'pointer' }}
+        >
+          <Icon sx={{ fontSize: isMobile ? 24 : 28, color: 'inherit' }} />
+          {!isMobile && (
+            <Typography sx={{ fontSize: 16, fontWeight: active ? 600 : 500 }}>
+              {label}
+            </Typography>
+          )}
+        </NavItem>
+      );
+    }
+
+    // Regular links
+    return (
+      <NavItem
+        to={to}
+        active={active}
+        isMobile={isMobile}
+        isExternal={isExternal}
+        key={to}
+        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      >
+        <Icon sx={{ fontSize: isMobile ? 24 : 28, color: 'inherit' }} />
+        {!isMobile && (
+          <Typography sx={{ fontSize: 16, fontWeight: active ? 600 : 500 }}>
+            {label}
+          </Typography>
+        )}
+      </NavItem>
+    );
+  };
 
   if (isMobile) {
     return (

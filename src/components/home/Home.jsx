@@ -122,7 +122,7 @@ const Slogan = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const VisitorCounter = styled(Box)(({ theme }) => ({
+const UserCounter = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: 8,
@@ -227,7 +227,6 @@ const CashierBubble = styled(Box)(({ theme }) => ({
 }));
 
 const SwiperSlideItem = styled(Box)(({ theme }) => ({
-
   textAlign: 'center',
   display: 'flex',
   flexDirection: 'column',
@@ -288,7 +287,6 @@ const ProductCard = styled(Card)(({ theme }) => ({
 
 const ProductImage = styled(CardMedia)(({ theme }) => ({
   height: 120,
-
   objectFit: 'contain',
   margin: '16px auto',
   transition: 'transform 0.4s ease',
@@ -383,11 +381,11 @@ const Home = () => {
   const [cashierMessage, setCashierMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [visitorCount, setVisitorCount] = useState(0);
+  const [userCount, setUserCount] = useState(0);
   const heroRef = useRef(null);
   const productRefs = useRef([]);
   const snackbarRef = useRef(null);
-  const visitorCountRef = useRef(null);
+  const userCountRef = useRef(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -423,17 +421,38 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Simulate visitor count
+
+  
+  // Fetch registered user count
   useEffect(() => {
-    const randomVisitors = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000;
-    setVisitorCount(randomVisitors);
-    if (visitorCountRef.current && randomVisitors) {
-      const countUp = new CountUp(visitorCountRef.current, randomVisitors, {
-        duration: 2,
-        separator: ',',
-      });
-      countUp.start();
-    }
+    const fetchUserCount = async () => {
+      try {
+        const response = await axios.get('https://sol-server-theta.vercel.app/api/users/count');
+        const count = response.data.count;
+        console.log('Fetched user count:', count); // Debug log
+        setUserCount(count);
+        if (userCountRef.current && count >= 0) {
+          userCountRef.current.textContent = '0'; // Initialize to avoid display issues
+          const countUp = new CountUp(userCountRef.current, count, {
+            duration: 2,
+            separator: ',',
+            startVal: 0,
+          });
+          if (!countUp.error) {
+            countUp.start();
+          } else {
+            console.error('CountUp error:', countUp.error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch user count:', error);
+        setUserCount(1000); // Fallback count
+        if (userCountRef.current) {
+          userCountRef.current.textContent = '1000';
+        }
+      }
+    };
+    fetchUserCount();
   }, []);
 
   // Rotate cashier messages
@@ -467,7 +486,7 @@ const Home = () => {
         { y: 0, opacity: 1, duration: 0.8, delay: 0.3, ease: 'power2.out' }
       );
       gsap.fromTo(
-        heroRef.current.querySelector('.visitor-counter'),
+        heroRef.current.querySelector('.user-counter'),
         { opacity: 0, y: 20 },
         { opacity: 1, y: 0, duration: 0.8, delay: 0.5, ease: 'power2.out' }
       );
@@ -586,19 +605,29 @@ const Home = () => {
       <HeroSection ref={heroRef}>
         <Slogan className="slogan">SOL Basket — Your Tasty World!</Slogan>
 
-        <VisitorCounter className="visitor-counter">
+        <UserCounter className="user-counter">
           <PeopleIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
           <Typography
-            ref={visitorCountRef}
+            sx={{
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: { xs: '14px', sm: '16px' },
+              color: '#000000',
+              mr: 1,
+            }}
+          >
+            Registered Users:
+          </Typography>
+          <Typography
+            ref={userCountRef}
             sx={{
               fontFamily: "'Poppins', sans-serif",
               fontSize: { xs: '14px', sm: '16px' },
               color: '#000000',
             }}
           >
-            Visitors today
+            {userCount}
           </Typography>
-        </VisitorCounter>
+        </UserCounter>
 
         <Box sx={{
           display: 'flex',
@@ -662,9 +691,9 @@ const Home = () => {
           slideShadows: false,
         }}
         breakpoints={{
-          320: { slidesPerView: 3, spaceBetween: 1 }, // Меньше элементов, меньше расстояние
+          320: { slidesPerView: 3, spaceBetween: 1 },
           640: { slidesPerView: 3, spaceBetween: 2 },
-          1024: { slidesPerView: 5, spaceBetween: 2 }, // Уменьшение gap на ПК
+          1024: { slidesPerView: 5, spaceBetween: 2 },
         }}
         className="mySwiper"
         style={{ paddingBottom: '40px' }}
@@ -678,8 +707,8 @@ const Home = () => {
                   image={category.image}
                   alt={category.category}
                   sx={{
-                    marginTop:1,
-                    width: { xs: 80, sm: 90, md: 100 }, // Размер изменяется в зависимости от экрана
+                    marginTop: 1,
+                    width: { xs: 80, sm: 90, md: 100 },
                     height: { xs: 80, sm: 90, md: 100 },
                     objectFit: 'cover',
                     mb: 1,
@@ -688,7 +717,6 @@ const Home = () => {
                   }}
                   loading="lazy"
                 />
-
                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', color: colors.textPrimary }}>
                   {category.category}
                 </Typography>
@@ -698,11 +726,9 @@ const Home = () => {
         ))}
       </Swiper>
 
-
       {/* Popular Products */}
       <SectionTitle>Top Sellers</SectionTitle>
       <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent={{ xs: 'center', sm: 'start' }}>
-
         {allProducts.map((product, index) => (
           <Grid item xs={12} sm={6} md={3} key={product.id}>
             <ProductCard

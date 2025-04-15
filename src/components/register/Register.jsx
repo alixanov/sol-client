@@ -1,104 +1,92 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, TextField, Button, Typography, CircularProgress, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 
-// Цветовая схема
+// Updated color scheme
 const colors = {
-  primary: '#1A3C59',
-  secondary: '#F5F6F5',
-  textPrimary: '#1A3C5A',
+  primaryGradient: 'linear-gradient(135deg, #0053e3 0%, #7B61FF 100%)',
+  secondaryGradient: 'linear-gradient(135deg, #9333EA 0%, #D8B4FE 100%)',
+  textPrimary: '#0053e3',
   white: '#FFFFFF',
   error: '#EF4444',
-  hover: '#2A4A6B',
-  rowBackground: 'linear-gradient(90deg, #F9FAFB 0%, #F1F5F9 100%)',
+  accent: '#9333EA',
+  border: '#E2E8F0',
 };
 
 // Styled components
 const FormContainer = styled(Box)({
   width: '100%',
-  background: colors.rowBackground,
   borderRadius: 12,
   padding: 28,
   maxWidth: 380,
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+  background: colors.white,
+  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+  border: `1px solid ${colors.border}`,
 });
 
 const StyledTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
     borderRadius: 6,
-    background: '#F9FAFB',
-    color: colors.textPrimary,
+    color: '#333',
     fontSize: 14,
     height: 46,
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: colors.primary,
+      borderColor: colors.border,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: colors.hover,
+      borderColor: colors.accent,
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: colors.primary,
-      borderWidth: 2,
+      borderColor: colors.accent,
+      borderWidth: 1.5,
     },
   },
   '& .MuiInputLabel-root': {
-    color: colors.textPrimary,
+    color: '#666',
     fontSize: 14,
     '&.Mui-focused': {
-      color: colors.primary,
+      color: colors.accent,
     },
   },
   marginBottom: 14,
 });
 
-const StyledSelect = styled(Select)({
-  borderRadius: 6,
-  background: '#F9FAFB',
-  color: colors.textPrimary,
-  fontSize: 14,
-  height: 46,
-  '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: colors.primary,
-  },
-  '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: colors.hover,
-  },
-  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: colors.primary,
-    borderWidth: 2,
-  },
-});
-
 const SubmitButton = styled(Button)({
-  background: colors.primary,
+  background: colors.primaryGradient,
   color: colors.white,
   padding: '10px 0',
   borderRadius: 6,
   fontSize: 14,
   fontWeight: 500,
-  transition: 'all 0.3s ease',
+  transition: 'all 0.2s ease',
   '&:hover': {
-    background: colors.hover,
-    transform: 'translateY(-1px)',
+    background: colors.primaryGradient,
+    boxShadow: '0 2px 8px rgba(0, 83, 227, 0.3)',
   },
   '&:disabled': {
-    background: '#6B7280',
-    color: colors.white,
+    background: '#CBD5E1',
+    color: '#64748B',
   },
 });
 
-const Register = () => {
+const IconWrapper = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  marginRight: 10,
+  color: colors.accent,
+});
+
+const Auth = () => {
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     login: '',
     password: '',
-    role: 'teacher', // По умолчанию учитель
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -114,23 +102,17 @@ const Register = () => {
     setLoading(true);
     setError('');
 
-    // Базовая валидация на стороне клиента
+    // Client-side validation
     if (!formData.login || !formData.password) {
       setLoading(false);
-      setError('Логин и пароль обязательны');
-      return;
-    }
-
-    if (!isLoginMode && (!formData.firstName || !formData.lastName)) {
-      setLoading(false);
-      setError('Имя и фамилия обязательны для регистрации');
+      setError('Login and password are required');
       return;
     }
 
     if (isLoginMode) {
-      // Авторизация
+      // Login
       try {
-        const response = await fetch('https://doctoral-studies-server.vercel.app/login', {
+        const response = await fetch('https://sol-server-theta.vercel.app/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -138,7 +120,6 @@ const Register = () => {
           body: JSON.stringify({
             login: formData.login,
             password: formData.password,
-            role: formData.role,
           }),
         });
 
@@ -148,18 +129,18 @@ const Register = () => {
         if (response.ok) {
           localStorage.setItem('token', result.token);
           localStorage.setItem('userData', JSON.stringify(result.user));
-          navigate('/doctoral-register');
+          navigate('/account');
         } else {
-          setError(result.error || 'Ошибка авторизации');
+          setError(result.error || 'Login failed');
         }
       } catch (err) {
         setLoading(false);
-        setError('Произошла ошибка: ' + err.message);
+        setError('An error occurred: ' + err.message);
       }
     } else {
-      // Регистрация (только для учителей)
+      // Registration
       try {
-        const response = await fetch('https://doctoral-studies-server.vercel.app/register-teacher', {
+        const response = await fetch('https://sol-server-theta.vercel.app/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -176,30 +157,52 @@ const Register = () => {
         setLoading(false);
 
         if (response.ok) {
-          alert('Учитель успешно зарегистрирован! Теперь войдите.');
+          alert('Registered successfully! Please sign in.');
           setIsLoginMode(true);
-          setFormData({ firstName: '', lastName: '', login: '', password: '', role: 'teacher' });
+          setFormData({ firstName: '', lastName: '', login: '', password: '' });
         } else {
-          setError(result.error || 'Ошибка регистрации');
+          setError(result.error || 'Registration failed');
         }
       } catch (err) {
         setLoading(false);
-        setError('Произошла ошибка: ' + err.message);
+        setError('An error occurred: ' + err.message);
       }
     }
   };
+  useEffect(() => {
+    if (window.innerWidth <= 768) { // Проверка на мобильный режим
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto'; // Восстановление скролла при уходе со страницы
+    };
+  }, []);
+
+
+
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bgcolor={colors.secondary}>
+    <Box
+      sx={{
+        height: { xs: '100vh', md: '90vh' },        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative', // Чтобы избежать прокрутки из-за абсолютных элементов
+      }}
+    >
       <FormContainer>
         <Typography
           variant="h5"
           align="center"
           fontWeight={600}
-          color={colors.textPrimary}
-          sx={{ mb: 2.5, fontSize: 20 }}
+          sx={{ mb: 3, fontSize: 20, background: colors.secondaryGradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+
+
+           }}
         >
-          {isLoginMode ? 'Авторизация' : 'Регистрация'}
+          {isLoginMode ? 'Sign In' : 'Create Account'}
         </Typography>
 
         {error && (
@@ -216,20 +219,24 @@ const Register = () => {
           {!isLoginMode && (
             <>
               <Box display="flex" alignItems="center" mb={1.5}>
-                <PersonIcon sx={{ color: colors.textPrimary, mr: 1, fontSize: 26 }} />
+                <IconWrapper>
+                  <PersonIcon sx={{ fontSize: 20 }} />
+                </IconWrapper>
                 <StyledTextField
                   fullWidth
-                  label="Имя"
+                  label="First Name"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
                 />
               </Box>
               <Box display="flex" alignItems="center" mb={1.5}>
-                <PersonIcon sx={{ color: colors.textPrimary, mr: 1, fontSize: 26 }} />
+                <IconWrapper>
+                  <PersonIcon sx={{ fontSize: 20 }} />
+                </IconWrapper>
                 <StyledTextField
                   fullWidth
-                  label="Фамилия"
+                  label="Last Name"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
@@ -239,21 +246,25 @@ const Register = () => {
           )}
 
           <Box display="flex" alignItems="center" mb={1.5}>
-            <EmailIcon sx={{ color: colors.textPrimary, mr: 1, fontSize: 26 }} />
+            <IconWrapper>
+              <EmailIcon sx={{ fontSize: 20 }} />
+            </IconWrapper>
             <StyledTextField
               fullWidth
-              label="Логин"
+              label="Login"
               name="login"
               value={formData.login}
               onChange={handleChange}
             />
           </Box>
 
-          <Box display="flex" alignItems="center" mb={1.5}>
-            <LockIcon sx={{ color: colors.textPrimary, mr: 1, fontSize: 26 }} />
+          <Box display="flex" alignItems="center" mb={2.5}>
+            <IconWrapper>
+              <LockIcon sx={{ fontSize: 20 }} />
+            </IconWrapper>
             <StyledTextField
               fullWidth
-              label="Пароль"
+              label="Password"
               name="password"
               type="password"
               value={formData.password}
@@ -261,45 +272,30 @@ const Register = () => {
             />
           </Box>
 
-          {isLoginMode && (
-            <Box display="flex" alignItems="center" mb={1.5}>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: colors.textPrimary, fontSize: 14 }}>Роль</InputLabel>
-                <StyledSelect
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  label="Роль"
-                >
-                  <MenuItem value="teacher">Учитель</MenuItem>
-                  <MenuItem value="student">Ученик</MenuItem>
-                </StyledSelect>
-              </FormControl>
-            </Box>
-          )}
-
           <SubmitButton fullWidth type="submit" disabled={loading}>
-            {loading ? <CircularProgress size={20} color="inherit" /> : isLoginMode ? 'Войти' : 'Зарегистрироваться'}
+            {loading ? <CircularProgress size={20} color="inherit" /> : isLoginMode ? 'Sign In' : 'Sign Up'}
           </SubmitButton>
         </form>
 
         <Typography
           align="center"
-          mt={2}
-          color={colors.textPrimary}
+          mt={2.5}
+          color="#64748B"
           sx={{ fontSize: 13 }}
         >
-          {isLoginMode ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}{' '}
+          {isLoginMode ? "Don't have an account?" : 'Already have an account?'}{' '}
           <Typography
             component="span"
-            color={colors.primary}
             sx={{
               cursor: 'pointer',
-              '&:hover': { textDecoration: 'underline', color: colors.hover },
+              color: colors.accent,
+              fontWeight: 500,
+              '&:hover': { textDecoration: 'underline' },
+              transition: 'color 0.2s ease',
             }}
             onClick={() => setIsLoginMode(!isLoginMode)}
           >
-            {isLoginMode ? 'Зарегистрироваться' : 'Войти'}
+            {isLoginMode ? 'Sign Up' : 'Sign In'}
           </Typography>
         </Typography>
       </FormContainer>
@@ -307,4 +303,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Auth;

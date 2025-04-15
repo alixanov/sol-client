@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import { Navbar, Home, Account, Cart ,InfoProduct, Barkery, Dairy, Snack, Drinks, CategoryProducts} from '../components/'; // Latest Navbar component
+import { Navbar, Home, Account, Cart ,InfoProduct, Barkery, Dairy, Snack, Drinks, CategoryProducts,Register} from '../components/'; // Latest Navbar component
 
 
 const RoutesContainer = styled(Box)(({ isMobile }) => ({
@@ -44,13 +44,11 @@ const AppRoutes = () => {
 
 
 
-          {/* <Route path="/dairy" element={<CategoryPage category="Dairy" />} />
-          <Route path="/vegetables" element={<CategoryPage category="Vegetables" />} />
-          <Route path="/snacks" element={<CategoryPage category="Snacks" />} />
-          <Route path="/drinks" element={<CategoryPage category="Drinks" />} /> */}
           <Route path="/cart" element={<Cart />} />
           <Route path="/account" element={<Account />} />
           <Route path="/product/:id" element={<InfoProduct />} />
+          <Route path="/register" element={<Register />} />
+
         </Routes>
       </RoutesContainer>
     </Box>
