@@ -24,6 +24,7 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import PeopleIcon from '@mui/icons-material/People';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CountUp } from 'countup.js';
 
 // Swiper CSS
@@ -124,17 +125,18 @@ const Slogan = styled(Typography)(({ theme }) => ({
 
 const UserCounter = styled(Box)(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   gap: 8,
   background: 'rgba(255, 255, 255, 0.9)',
-  padding: '8px 16px',
+  padding: '12px 20px',
   borderRadius: 12,
   boxShadow: `0 2px 8px ${colors.shadow}`,
   margin: '16px auto',
   zIndex: 1,
   width: 'fit-content',
   [theme.breakpoints.down('sm')]: {
-    padding: '6px 12px',
+    padding: '8px 16px',
     borderRadius: 10,
   },
 }));
@@ -382,16 +384,17 @@ const Home = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [userCount, setUserCount] = useState(0);
+  const [visitorCount, setVisitorCount] = useState(0);
   const heroRef = useRef(null);
   const productRefs = useRef([]);
   const snackbarRef = useRef(null);
   const userCountRef = useRef(null);
+  const visitorCountRef = useRef(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
-  // All products from shopData
   const allProducts = shopData.flatMap(category => category.products);
 
   const messages = [
@@ -414,6 +417,7 @@ const Home = () => {
       } catch (error) {
         console.error('Failed to fetch SOL price:', error);
         setSolPrice(145.32);
+        setPriceTrend('down');
       }
     };
     fetchSolPrice();
@@ -421,39 +425,47 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-
-  
-  // Fetch registered user count
+  // Track visitor on page load
   useEffect(() => {
-    const fetchUserCount = async () => {
+    const trackVisitor = async () => {
       try {
-        const response = await axios.get('https://sol-server-theta.vercel.app/api/users/count');
-        const count = response.data.count;
-        console.log('Fetched user count:', count); // Debug log
-        setUserCount(count);
-        if (userCountRef.current && count >= 0) {
-          userCountRef.current.textContent = '0'; // Initialize to avoid display issues
-          const countUp = new CountUp(userCountRef.current, count, {
-            duration: 2,
-            separator: ',',
-            startVal: 0,
-          });
-          if (!countUp.error) {
-            countUp.start();
-          } else {
-            console.error('CountUp error:', countUp.error);
-          }
-        }
+        const response = await axios.post('https://sol-server-theta.vercel.app/api/visitors/track', {
+          userAgent: navigator.userAgent,
+        });
+        setUserCount(response.data.users);
+        setVisitorCount(response.data.visitors);
       } catch (error) {
-        console.error('Failed to fetch user count:', error);
-        setUserCount(1000); // Fallback count
-        if (userCountRef.current) {
-          userCountRef.current.textContent = '1000';
-        }
+        console.error('Failed to track visitor:', error);
+        setUserCount(1000);
+        setVisitorCount(5000);
       }
     };
-    fetchUserCount();
+    trackVisitor();
   }, []);
+
+  // Animate counts
+  useEffect(() => {
+    if (userCountRef.current && userCount >= 0) {
+      const userCountUp = new CountUp(userCountRef.current, userCount, {
+        duration: 2,
+        separator: ',',
+        startVal: 0,
+      });
+      if (!userCountUp.error) {
+        userCountUp.start();
+      }
+    }
+    if (visitorCountRef.current && visitorCount >= 0) {
+      const visitorCountUp = new CountUp(visitorCountRef.current, visitorCount, {
+        duration: 2,
+        separator: ',',
+        startVal: 0,
+      });
+      if (!visitorCountUp.error) {
+        visitorCountUp.start();
+      }
+    }
+  }, [userCount, visitorCount]);
 
   // Rotate cashier messages
   useEffect(() => {
@@ -527,18 +539,12 @@ const Home = () => {
 
   const handleAddToCart = (product, index, e) => {
     e.stopPropagation();
-
-    // Get current cart from localStorage or create empty
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-    // Check if product exists in cart
     const existingItem = cart.find(item => item.id === product.id);
 
     if (existingItem) {
-      // If product exists, increase quantity
       existingItem.quantity += 1;
     } else {
-      // If product doesn't exist, add new with quantity 1
       cart.push({
         id: product.id,
         name: product.name,
@@ -548,14 +554,10 @@ const Home = () => {
       });
     }
 
-    // Save updated cart to localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
-
-    // Show notification
     setSnackbarMessage(`${product.name} added to cart!`);
     setOpenSnackbar(true);
 
-    // Animate card
     const ref = productRefs.current[index];
     if (ref) {
       gsap.to(ref, {
@@ -567,8 +569,6 @@ const Home = () => {
         ease: 'power2.inOut',
       });
     }
-
-    console.log(`Added ${product.name} to cart`, cart);
   };
 
   const handleCloseSnackbar = () => {
@@ -606,27 +606,52 @@ const Home = () => {
         <Slogan className="slogan">SOL Basket — Your Tasty World!</Slogan>
 
         <UserCounter className="user-counter">
-          <PeopleIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
-          <Typography
-            sx={{
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: { xs: '14px', sm: '16px' },
-              color: '#000000',
-              mr: 1,
-            }}
-          >
-            Registered Users:
-          </Typography>
-          <Typography
-            ref={userCountRef}
-            sx={{
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: { xs: '14px', sm: '16px' },
-              color: '#000000',
-            }}
-          >
-            {userCount}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <PeopleIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
+            <Typography
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: { xs: '14px', sm: '16px' },
+                color: '#000000',
+                mr: 1,
+              }}
+            >
+              Registered Users:
+            </Typography>
+            <Typography
+              ref={userCountRef}
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: { xs: '14px', sm: '16px' },
+                color: '#000000',
+              }}
+            >
+              {userCount}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <VisibilityIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
+            <Typography
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: { xs: '14px', sm: '16px' },
+                color: '#000000',
+                mr: 1,
+              }}
+            >
+              Unique Visitors:
+            </Typography>
+            <Typography
+              ref={visitorCountRef}
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: { xs: '14px', sm: '16px' },
+                color: '#000000',
+              }}
+            >
+              {visitorCount}
+            </Typography>
+          </Box>
         </UserCounter>
 
         <Box sx={{
@@ -660,11 +685,6 @@ const Home = () => {
         </Box>
 
         <CashierBubble>
-          {/* <Lottie
-            animationData={cashierAnimation}
-            style={getCashierAnimationSize()}
-            loop={true}
-          /> */}
           <CashierMessage className="cashier-message">
             {cashierMessage}
           </CashierMessage>
