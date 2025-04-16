@@ -465,7 +465,7 @@ const Home = () => {
   useEffect(() => {
     const fetchVisitorData = async () => {
       try {
-        const response = await axios.get('https://sol-server-theta.vercel.app/api/users/count');
+        const response = await axios.get('http://localhost:5000/api/users/count');
         const { realtimeVisitors, totalVisits } = response.data;
         setPrevRealtimeVisitors(realtimeVisitors);
         setRealtimeVisitors(realtimeVisitors);
