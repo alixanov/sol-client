@@ -223,19 +223,29 @@ const Cart = () => {
 
       {cartItems.map((item) => (
         <CartCard key={item.id}>
-          <Link to={`/product/${item.id}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Link
+            to={`/product/${item.id}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              flexDirection: window.innerWidth <= 768 ? 'column' : 'row' // Переключение макета
+            }}
+          >
             <CartImage
               component="img"
               image={item.image}
               alt={item.name}
+              sx={{ width: window.innerWidth <= 768 ? '100%' : 'auto' }} // Подстраиваем ширину
             />
-            <CardContent sx={{ flex: 1, p: 0 }}>
+            <CardContent sx={{ flex: 1, p: 0, textAlign: window.innerWidth <= 768 ? 'center' : 'left' }}>
               <CartTitle component="span">{item.name}</CartTitle>
               <CartText>
                 Price: ${item.usdPrice.toFixed(2)} × {item.quantity} = ${(item.usdPrice * item.quantity).toFixed(2)}
               </CartText>
             </CardContent>
           </Link>
+
           <DeleteButton onClick={() => handleRemoveItem(item.id)}>
             <DeleteIcon />
           </DeleteButton>

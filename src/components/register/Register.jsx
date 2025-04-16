@@ -58,10 +58,11 @@ const StyledTextField = styled(TextField)({
 const SubmitButton = styled(Button)({
   background: colors.primaryGradient,
   color: colors.white,
-  padding: '10px 0',
-  borderRadius: 6,
-  fontSize: 14,
+  padding: '8px 0',
+  borderRadius: 8,
+  fontSize: 13,
   fontWeight: 500,
+  textTransform: 'none',
   transition: 'all 0.2s ease',
   '&:hover': {
     background: colors.primaryGradient,
@@ -90,6 +91,7 @@ const Auth = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -101,6 +103,7 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMessage('');
 
     // Client-side validation
     if (!formData.login || !formData.password) {
@@ -157,7 +160,7 @@ const Auth = () => {
         setLoading(false);
 
         if (response.ok) {
-          alert('Registered successfully! Please sign in.');
+          setSuccessMessage('Registered successfully! Please sign in.');
           setIsLoginMode(true);
           setFormData({ firstName: '', lastName: '', login: '', password: '' });
         } else {
@@ -169,27 +172,26 @@ const Auth = () => {
       }
     }
   };
+
   useEffect(() => {
-    if (window.innerWidth <= 768) { // Проверка на мобильный режим
+    if (window.innerWidth <= 768) {
       document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.body.style.overflow = 'auto'; // Восстановление скролла при уходе со страницы
+      document.body.style.overflow = 'auto';
     };
   }, []);
-
-
-
 
   return (
     <Box
       sx={{
-        height: { xs: '100vh', md: '90vh' },        overflow: 'hidden',
+        height: { xs: '100vh', md: '90vh' },
+        overflow: 'hidden',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative', // Чтобы избежать прокрутки из-за абсолютных элементов
+        position: 'relative',
       }}
     >
       <FormContainer>
@@ -197,12 +199,15 @@ const Auth = () => {
           variant="h5"
           align="center"
           fontWeight={600}
-          sx={{ mb: 3, fontSize: 20, background: colors.secondaryGradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-
-
-           }}
+          sx={{
+            mb: 3,
+            fontSize: 20,
+            background: colors.secondaryGradient,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
         >
-          {isLoginMode ? 'Sign In' : 'Create Account'}
+          {isLoginMode ? 'Sign in' : 'Create Account'}
         </Typography>
 
         {error && (
@@ -212,6 +217,16 @@ const Auth = () => {
             sx={{ mb: 2, fontSize: 13 }}
           >
             {error}
+          </Typography>
+        )}
+
+        {successMessage && (
+          <Typography
+            align="center"
+            color={colors.accent}
+            sx={{ mb: 2, fontSize: 13 }}
+          >
+            {successMessage}
           </Typography>
         )}
 
@@ -272,8 +287,18 @@ const Auth = () => {
             />
           </Box>
 
-          <SubmitButton fullWidth type="submit" disabled={loading}>
-            {loading ? <CircularProgress size={20} color="inherit" /> : isLoginMode ? 'Sign In' : 'Sign Up'}
+          <SubmitButton
+            fullWidth
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : isLoginMode ? (
+              'Sign in'
+            ) : (
+              'Sign up'
+            )}
           </SubmitButton>
         </form>
 
@@ -293,9 +318,12 @@ const Auth = () => {
               '&:hover': { textDecoration: 'underline' },
               transition: 'color 0.2s ease',
             }}
-            onClick={() => setIsLoginMode(!isLoginMode)}
+            onClick={() => {
+              setIsLoginMode(!isLoginMode);
+              setSuccessMessage('');
+            }}
           >
-            {isLoginMode ? 'Sign Up' : 'Sign In'}
+            {isLoginMode ? 'Sign up' : 'Sign in'}
           </Typography>
         </Typography>
       </FormContainer>

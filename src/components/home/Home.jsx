@@ -23,11 +23,8 @@ import { Pagination, EffectCoverflow, Autoplay } from 'swiper/modules';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import PeopleIcon from '@mui/icons-material/People';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { CountUp } from 'countup.js';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-
+import { CountUp } from 'countup.js';
 
 // Swiper CSS
 import 'swiper/css';
@@ -126,6 +123,24 @@ const Slogan = styled(Typography)(({ theme }) => ({
 }));
 
 const UserCounter = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 8,
+  background: 'rgba(255, 255, 255, 0.9)',
+  padding: '12px 20px',
+  borderRadius: 12,
+  boxShadow: `0 2px 8px ${colors.shadow}`,
+  margin: '16px auto',
+  zIndex: 1,
+  width: 'fit-content',
+  [theme.breakpoints.down('sm')]: {
+    padding: '8px 16px',
+    borderRadius: 10,
+  },
+}));
+
+const TotalVisitsCounter = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -385,19 +400,18 @@ const Home = () => {
   const [cashierMessage, setCashierMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [userCount, setUserCount] = useState(0);
-  const [visitorCount, setVisitorCount] = useState(0);
+  const [realtimeVisitors, setRealtimeVisitors] = useState(0);
+  const [totalVisits, setTotalVisits] = useState(0);
+  const [prevRealtimeVisitors, setPrevRealtimeVisitors] = useState(0);
   const heroRef = useRef(null);
   const productRefs = useRef([]);
   const snackbarRef = useRef(null);
-  const userCountRef = useRef(null);
-  const visitorCountRef = useRef(null);
+  const realtimeVisitorsRef = useRef(null);
+  const totalVisitsRef = useRef(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
-  const [realtimeVisitors, setRealtimeVisitors] = useState(0);
-
 
   const allProducts = shopData.flatMap(category => category.products);
 
@@ -429,49 +443,69 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Обновите эффект trackVisitor
+  // Track visitor once per session
   useEffect(() => {
-    const trackVisitor = async () => {
-      try {
-        const response = await axios.post('https://sol-server-theta.vercel.app/api/visitors/track', {
-          userAgent: navigator.userAgent,
-        });
-        setUserCount(response.data.users);
-        setVisitorCount(response.data.visitors);
-        setRealtimeVisitors(response.data.realtimeVisitors || 0); // Добавлено
-      } catch (error) {
-        console.error('Failed to track visitor:', error);
-        setUserCount(1000);
-        setVisitorCount(5000);
-        setRealtimeVisitors(200); // Fallback значение
-      }
-    };
-    trackVisitor();
+    const hasTracked = sessionStorage.getItem('visitorTracked');
+    if (!hasTracked) {
+      const trackVisitor = async () => {
+        try {
+          await axios.post('https://sol-server-theta.vercel.app/api/visitors/track', {
+            userAgent: navigator.userAgent,
+          });
+          sessionStorage.setItem('visitorTracked', 'true');
+        } catch (error) {
+          console.error('Failed to track visitor:', error);
+        }
+      };
+      trackVisitor();
+    }
   }, []);
 
-  // Animate counts
+  // Fetch real-time visitors and total visits
   useEffect(() => {
-    if (userCountRef.current && userCount >= 0) {
-      const userCountUp = new CountUp(userCountRef.current, userCount, {
-        duration: 2,
-        separator: ',',
-        startVal: 0,
-      });
-      if (!userCountUp.error) {
-        userCountUp.start();
+    const fetchVisitorData = async () => {
+      try {
+        const response = await axios.get('https://sol-server-theta.vercel.app/api/users/count');
+        const { realtimeVisitors, totalVisits } = response.data;
+        setPrevRealtimeVisitors(realtimeVisitors);
+        setRealtimeVisitors(realtimeVisitors);
+        setTotalVisits(totalVisits);
+
+        // Animate real-time visitors count
+        if (realtimeVisitorsRef.current && realtimeVisitors >= 0) {
+          const countUp = new CountUp(realtimeVisitorsRef.current, realtimeVisitors, {
+            duration: 2,
+            separator: ',',
+            startVal: prevRealtimeVisitors,
+          });
+          if (!countUp.error) {
+            countUp.start();
+          } else {
+            console.error('CountUp error:', countUp.error);
+          }
+        }
+
+        // Animate total visits count
+        if (totalVisitsRef.current && totalVisits >= 0) {
+          const countUp = new CountUp(totalVisitsRef.current, totalVisits, {
+            duration: 2,
+            separator: ',',
+            startVal: totalVisits,
+          });
+          if (!countUp.error) {
+            countUp.start();
+          } else {
+            console.error('CountUp error:', countUp.error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch visitor data:', error);
       }
-    }
-    if (visitorCountRef.current && visitorCount >= 0) {
-      const visitorCountUp = new CountUp(visitorCountRef.current, visitorCount, {
-        duration: 2,
-        separator: ',',
-        startVal: 0,
-      });
-      if (!visitorCountUp.error) {
-        visitorCountUp.start();
-      }
-    }
-  }, [userCount, visitorCount]);
+    };
+    fetchVisitorData();
+    const interval = setInterval(fetchVisitorData, 10000);
+    return () => clearInterval(interval);
+  }, [prevRealtimeVisitors]);
 
   // Rotate cashier messages
   useEffect(() => {
@@ -507,6 +541,11 @@ const Home = () => {
         heroRef.current.querySelector('.user-counter'),
         { opacity: 0, y: 20 },
         { opacity: 1, y: 0, duration: 0.8, delay: 0.5, ease: 'power2.out' }
+      );
+      gsap.fromTo(
+        heroRef.current.querySelector('.total-visits-counter'),
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, delay: 0.6, ease: 'power2.out' }
       );
       gsap.fromTo(
         heroRef.current.querySelector('.sol-ticker'),
@@ -612,54 +651,8 @@ const Home = () => {
         <Slogan className="slogan">SOL Basket — Your Tasty World!</Slogan>
 
 
-        <UserCounter className="user-counter">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <PeopleIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
-            <Typography
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                fontSize: { xs: '14px', sm: '16px' },
-                color: '#000000',
-                mr: 1,
-              }}
-            >
-              Registered Users:
-            </Typography>
-            <Typography
-              ref={userCountRef}
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                fontSize: { xs: '14px', sm: '16px' },
-                color: '#000000',
-              }}
-            >
-              {userCount}
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <VisibilityIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
-            <Typography
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                fontSize: { xs: '14px', sm: '16px' },
-                color: '#000000',
-                mr: 1,
-              }}
-            >
-              Total Visitors:
-            </Typography>
-            <Typography
-              ref={visitorCountRef}
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                fontSize: { xs: '14px', sm: '16px' },
-                color: '#000000',
-              }}
-            >
-              {visitorCount}
-            </Typography>
-          </Box>
-          {/* Добавленный блок для отображения текущих посетителей */}
+
+        <TotalVisitsCounter className="total-visits-counter">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <AccessTimeIcon sx={{ color: colors.accent, fontSize: { xs: '20px', sm: '24px' } }} />
             <Typography
@@ -670,19 +663,21 @@ const Home = () => {
                 mr: 1,
               }}
             >
-              Online Now:
+              Total Visits:
             </Typography>
             <Typography
+              ref={totalVisitsRef}
               sx={{
                 fontFamily: "'Poppins', sans-serif",
                 fontSize: { xs: '14px', sm: '16px' },
                 color: '#000000',
               }}
             >
-              {realtimeVisitors}
+              {totalVisits}
             </Typography>
           </Box>
-        </UserCounter>
+        </TotalVisitsCounter>
+
         <Box sx={{
           display: 'flex',
           flexDirection: { xs: 'column', sm: 'row' },
