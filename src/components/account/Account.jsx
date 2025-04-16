@@ -36,7 +36,7 @@ const HeaderSection = styled(Paper)(({ theme }) => ({
   boxShadow: '0 2px 12px rgba(0, 0, 0, 0.05)',
   border: `1px solid ${colors.border}`,
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2.5),
     borderRadius: 8,
   },
 }));
@@ -49,6 +49,7 @@ const WelcomeBox = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+    gap: theme.spacing(1),
   },
 }));
 
@@ -59,9 +60,9 @@ const ProfileAvatar = styled(Avatar)(({ theme }) => ({
   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
   fontSize: '1.5rem',
   [theme.breakpoints.down('sm')]: {
-    width: theme.spacing(6),
-    height: theme.spacing(6),
-    fontSize: '1.2rem',
+    width: theme.spacing(5),
+    height: theme.spacing(5),
+    fontSize: '1rem',
   },
 }));
 
@@ -72,7 +73,7 @@ const MenuSection = styled(Paper)(({ theme }) => ({
   boxShadow: '0 2px 12px rgba(0, 0, 0, 0.05)',
   border: `1px solid ${colors.border}`,
   [theme.breakpoints.down('sm')]: {
-    width:"340px",
+    width: "340px",
     padding: theme.spacing(2),
     borderRadius: 8,
   },
@@ -129,9 +130,9 @@ const LogoutButton = styled(Button)(({ theme }) => ({
     borderColor: '#CBD5E1',
   },
   [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    padding: theme.spacing(1),
+    padding: theme.spacing(1, 1.5),
     fontSize: '0.8rem',
+    alignSelf: 'flex-end',
   },
 }));
 
@@ -217,18 +218,17 @@ const Account = () => {
       <HeaderSection>
         <WelcomeBox>
           <ProfileAvatar aria-label="User avatar">{getInitials()}</ProfileAvatar>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Box sx={{ flex: 1, maxWidth: isMobile ? '100%' : '70%', mt: isMobile ? 1 : 0 }}>
             <Typography
-              variant={isMobile ? 'h5' : 'h4'}
+              variant={isMobile ? 'h6' : isTablet ? 'h5' : 'h4'}
               sx={{
                 fontWeight: 600,
                 mb: 0.5,
                 background: colors.secondaryGradient,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                fontSize: { xs: '1.1rem', sm: '1.5rem', md: '2rem' },
+                wordWrap: 'break-word',
               }}
             >
               Welcome, {userData.firstName} {userData.lastName}
@@ -236,7 +236,7 @@ const Account = () => {
             <Typography
               color="#64748B"
               variant={isMobile ? 'body2' : 'body1'}
-              sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+              sx={{ wordWrap: 'break-word' }}
             >
               Manage your profile and orders
             </Typography>
